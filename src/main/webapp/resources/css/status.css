@@ -1,0 +1,10 @@
+table.table-striped.table-hover th p {
+    margin: 0;
+    color: #34495e;
+    font-weight: bold;
+    font-size: medium;
+}
+
+.jumbotron h1 {
+    font-size: 40px;
+}

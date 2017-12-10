@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.StatusDao">
+    <resultMap type="Status" id="statusResultMap">
+        <id property="id" column="id"></id>
+        <result property="codeId" column="code_id"></result>
+        <result property="statusValue" column="status_value"></result>
+        <result property="time" column="time"></result>
+        <result property="memory" column="memory"></result>
+        <result property="compileInfo" column="compile_info"></result>
+        <result property="date" column="date" javaType="java.sql.Timestamp"></result>
+        <association property="idParam" resultMap="com.bppleman.dao.IDParamDao.idParamResultMap"></association>
+        <association property="code" column="code_id" select="com.bppleman.dao.CodeDao.getCodeByID"></association>
+    </resultMap>
+
+    <select id="getStatus" resultMap="statusResultMap">
+        SELECT * FROM t_status
+        WHERE contest_id = #{contestId}
+        AND exam_id = #{examId}
+        <if test="userId != -1">AND user_id = #{userId}</if>
+        <if test="problemId != -1">AND problem_id = #{problemId}</if>
+        ORDER BY id DESC
+    </select>
+
+    <select id="getStatusByIDs" resultMap="statusResultMap">
+        SELECT * FROM t_status
+        WHERE id in
+        <foreach collection="list" item="id" open="(" close=")"
+                 separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getTheLastInsertStatus" resultMap="statusResultMap">
+        SELECT * FROM t_status
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <insert id="insertStatus" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_status(user_id, problem_id, contest_id, exam_id, code_id, status_value, time, memory, date)
+        VALUES (#{idParam.userId}, #{idParam.problemId}, #{idParam.contestId}, #{idParam.examId}, #{codeId}, #{statusValue}, #{time}, #{memory}, #{date})
+    </insert>
+
+    <update id="updateStatus" parameterType="Status">
+        UPDATE t_status SET
+        <trim>
+            <if test="idParam.userId != -1">user_id = #{idParam.userId},</if>
+            <if test="idParam.problemId != -1">user_id = #{idParam.problemId},</if>
+            <if test="idParam.contestId != -1">user_id = #{idParam.contestId},</if>
+            <if test="idParam.examId != -1">user_id = #{idParam.examId},</if>
+            <if test="codeId != -1" >code_id = #{codeId},</if>
+            <if test="statusValue != null" >status_value = #{statusValue},</if>
+            <if test="time != -1" >time = #{time},</if>
+            <if test="memory != -1" >memory = #{memory},</if>
+            <if test="compileInfo != null" >compile_info = #{compileInfo},</if>
+            <if test="date != null" >date = #{date}</if>
+        </trim>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>

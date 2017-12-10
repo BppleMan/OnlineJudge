@@ -1,0 +1,34 @@
+form.contest-form {
+    margin-top: 50px;
+    margin-right: 20%;
+    margin-left: 20%;
+    width: 60%;
+}
+
+form.contest-form label {
+    font-size: 20px;
+    width: 20%;
+}
+
+form.contest-form label input[type="radio"]{
+    margin: 3px;
+}
+
+form.contest-form input.input-group {
+    width: 80%;
+}
+
+form.contest-form .form-group .input-group.date.form_datetime input{
+    font-size: 20px;
+}
+
+form.contest-form .form-group input.form-control[type="number"] {
+    display: inline-block;
+    margin-left: 5px;
+    width: 14%;
+}
+
+form.contest-form .form-group input.btn.btn-default {
+    margin-right: 50%;
+    margin-left: 50%;
+}

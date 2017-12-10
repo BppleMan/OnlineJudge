@@ -1,0 +1,34 @@
+.search-group:after {
+    content : "";
+    height : 0;
+    visibility : hidden;
+    display : block;
+    clear : both;
+}
+
+.search-group .search-type {
+    display: inline-block;
+    float: right;
+}
+
+.search-group .search-keyword {
+    display: inline-block;
+    float: right;
+    width: 300px;
+}
+
+.btn {
+    line-height: 42px;
+    padding: 0 15px;
+}
+
+ul.pagination li a {
+    cursor: pointer;
+    -webkit-user-select: none;
+
+    -moz-user-select: none;
+
+    -ms-user-select: none;
+
+    user-select: none;
+}

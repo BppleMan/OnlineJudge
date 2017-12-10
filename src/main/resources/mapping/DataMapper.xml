@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.DataDao">
+    <resultMap type="Data" id="dataResultMap">
+        <id property="id" column="id" javaType="int"></id>
+        <result property="problemId" column="problem_id" javaType="int"></result>
+        <result property="input" column="input" javaType="string"></result>
+        <result property="answer" column="answer" javaType="string"></result>
+        <result property="shellName" column="shell_name" javaType="string"></result>
+        <result property="shellValue" column="shell_value" javaType="string"></result>
+    </resultMap>
+
+    <select id="getDataByProblemIDAndShellName" resultMap="dataResultMap" resultType="Data">
+        SELECT p.id,p.problem_id, p.input,p.answer,s.shell_name,s.shell_value
+        FROM t_problem_data p,t_shell s
+        WHERE p.problem_id = #{arg0}
+        AND s.shell_name = #{arg1}
+    </select>
+</mapper>

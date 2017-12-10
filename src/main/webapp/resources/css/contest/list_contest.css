@@ -1,0 +1,41 @@
+.pagination-control .page-button {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.page-button .input-group .input-group-btn {
+    width: inherit;
+}
+
+.page-button .input-group input.form-control {
+    width: 60px;
+    height: inherit;
+}
+
+.search-button {
+    height: 33px;
+}
+
+.search-button .input-group {
+    float: right;
+}
+
+.search-button .input-group .input-group-btn {
+    width: inherit;
+}
+
+.search-button .input-group input.form-control {
+    /*width: 60px;*/
+    height: inherit;
+}
+
+ul.pagination li a {
+    cursor: pointer;
+    -webkit-user-select: none;
+
+    -moz-user-select: none;
+
+    -ms-user-select: none;
+
+    user-select: none;
+}

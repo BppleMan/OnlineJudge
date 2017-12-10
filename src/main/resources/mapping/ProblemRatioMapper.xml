@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.ProblemRatioDao">
+    <resultMap type="ProblemRatio" id="problemRatioResultMap">
+        <id property="id" column="id" javaType="int"></id>
+        <result property="submitTime" column="submit_time"></result>
+        <result property="acTime" column="ac_time"></result>
+        <result property="ratioValue" column="ratio_value"></result>
+        <association property="idParam" resultMap="com.bppleman.dao.IDParamDao.idParamResultMap"></association>
+    </resultMap>
+
+    <select id="getProblemRatio" resultMap="problemRatioResultMap">
+        SELECT * FROM t_problem_ratio
+        WHERE contest_id = #{contestId}
+        AND exam_id = #{examId}
+        <if test="problemId != -1">AND problem_id = #{problemId}</if>
+    </select>
+
+    <insert id="insertProblemRatio" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_problem_ratio
+        (problem_id, contest_id, exam_id, submit_time, ac_time, ratio_value)
+        VALUES
+        (#{idParam.problemId}, #{idParam.contestId}, ${idParam.examId}, #{submitTime}, #{acTime}, #{ratioValue})
+        ON DUPLICATE KEY UPDATE
+        submit_time = #{submitTime}, ac_time = ${acTime}, ratio_value = #{ratioValue};
+    </insert>
+
+    <update id="updateProblemRatio">
+        UPDATE t_problem_ratio
+        SET submit_time = #{submitTime},
+        ac_time = #{acTime},
+        ratio_value = #{ratioValue}
+        WHERE problem_id = #{idParam.problemId}
+        AND contest_id = #{idParam.contestId}
+        AND exam_id = #{idParam.examId}
+    </update>
+
+    <delete id="deleteProblemRatio">
+        DELETE FROM t_problem_ratio
+        WHERE
+        <foreach collection="list" item="idParam" separator="OR">
+            (
+            contest_id = #{idParam.contestId}
+            AND exam_id = #{idParam.examId}
+            <if test="idParam.problemId != -1">AND problem_id = #{idParam.problemId}</if>
+            )
+        </foreach>
+    </delete>
+</mapper>

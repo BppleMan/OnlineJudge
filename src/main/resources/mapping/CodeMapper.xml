@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.CodeDao">
+    <resultMap type="Code" id="codeResultMap">
+        <id property="id" column="id"></id>
+        <result property="length" column="length"></result>
+        <result property="codeValue" column="code_value"></result>
+        <result property="language" column="language"></result>
+        <association property="idParam" resultMap="com.bppleman.dao.IDParamDao.idParamResultMap"></association>
+    </resultMap>
+
+    <select id="getCodeByID" resultMap="codeResultMap">
+        SELECT * FROM t_code
+        WHERE id=#{id}
+    </select>
+    
+    <select id="getCode" resultMap="codeResultMap">
+        SELECT * FROM t_code
+        WHERE contest_id = #{contestId}
+        AND exam_id = #{examId}
+        AND user_id=#{userId}
+        AND problem_id=#{problemId}
+    </select>
+
+    <insert id="insertCode" parameterType="Code" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_code(user_id, problem_id, contest_id, exam_id, length, code_value, language)
+        VALUES (#{idParam.userId}, #{idParam.problemId}, #{idParam.contestId}, #{idParam.examId}, #{length}, #{codeValue}, #{language})
+    </insert>
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.UserSolveDao">
+    <resultMap type="UserSolve" id="userSolveResultMap">
+        <id property="id" column="id"/>
+        <result property="solveState" column="solve_state"></result>
+        <association property="idParam" resultMap="com.bppleman.dao.IDParamDao.idParamResultMap"></association>
+    </resultMap>
+
+    <select id="getUserSolve" resultMap="userSolveResultMap">
+        SELECT * FROM t_user_solve
+        WHERE contest_id = #{contestId}
+        AND exam_id = #{examId}
+        AND user_id = #{userId}
+        <if test="problemId != -1">AND problem_id = #{problemId}</if>
+    </select>
+
+    <insert id="insertUserSolve" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_user_solve
+        (user_id, problem_id, contest_id, exam_id, solve_state)
+        VALUES
+        (#{idParam.userId}, #{idParam.problemId}, #{idParam.contestId}, ${idParam.examId}, #{solveState})
+    </insert>
+
+    <update id="updateUserSolve">
+        UPDATE t_user_solve
+        SET solve_state = #{solveState}
+        WHERE user_id = #{idParam.userId}
+        AND contest_id = #{idParam.contestId}
+        AND exam_id = #{idParam.examId}
+        <if test="idParam.problemId != -1">AND problem_id = #{idParam.problemId}</if>
+    </update>
+
+    <delete id="deleteUserSolve">
+        DELETE FROM t_user_solve
+        WHERE
+        <foreach collection="list" item="idParam" separator="OR">
+            (
+            contest_id = #{idParam.contestId}
+            AND exam_id = #{idParam.examId}
+            <if test="idParam.userId != -1">AND user_id = #{idParam.userId}</if>
+            <if test="idParam.problemId != -1">AND problem_id = #{idParam.problemId}</if>
+            )
+        </foreach>
+    </delete>
+</mapper>

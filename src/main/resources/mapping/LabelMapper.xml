@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.LabelDao">
+    <resultMap type="Label" id="labelResultMap">
+        <id property="id" column="id"/>
+        <result property="label_type" column="type"/>
+        <result property="label_value" column="labelValue"/>
+    </resultMap>
+
+    <select id="getAllTypes" resultType="String">
+        SELECT type FROM t_label
+        GROUP BY type
+    </select>
+
+    <select id="getAllLabels" resultMap="labelResultMap" resultType="Label">
+        SELECT * FROM t_label
+    </select>
+
+    <select id="getLabelsByType" resultMap="labelResultMap" resultType="Label">
+        SELECT * FROM t_label
+        WHERE type=#{type}
+    </select>
+</mapper>

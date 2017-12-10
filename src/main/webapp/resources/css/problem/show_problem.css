@@ -1,0 +1,21 @@
+h3 {
+    color: #34495e;
+}
+.container .jumbotron span {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+.container .jumbotron .form-control {
+    font-size: 18px;
+    display: table;
+    background-color: rgba(255,255,255,0.5);
+}
+
+.container .jumbotron pre {
+    font-size: 18px;
+}
+
+.btn-group.btn-group-md.col-md-offset-5 {
+    margin-top: 20px;
+}

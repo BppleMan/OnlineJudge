@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.ContestDao">
+    <resultMap type="Contest" id="contestResultMap">
+        <id property="id" column="id" javaType="int"></id>
+        <result property="name" column="name" javaType="string"></result>
+        <result property="startTime" column="start_time" javaType="java.sql.Timestamp"></result>
+        <result property="endTime" column="end_time" javaType="java.sql.Timestamp"></result>
+        <result property="duration" column="duration" javaType="int"></result>
+        <result property="status" column="status" javaType="string"></result>
+        <result property="type" column="type" javaType="string"></result>
+        <result property="author" column="author" javaType="string"></result>
+        <result property="password" column="password" javaType="string"></result>
+        <result property="note" column="note" javaType="string"></result>
+        <collection property="problems" column="id" select="getProblemsByContestID"></collection>
+    </resultMap>
+
+    <select id="getAllContests" resultMap="contestResultMap" resultType="Contest">
+        SELECT * FROM t_contest
+        ORDER BY start_time DESC
+    </select>
+
+    <select id="getContestsByNote" resultMap="contestResultMap" resultType="Contest">
+        SELECT * FROM t_contest
+        WHERE note=#{note}
+    </select>
+    
+    <select id="getContestsByAuthor" resultMap="contestResultMap" resultType="Contest">
+        SELECT * FROM t_contest
+        WHERE author=#{author}
+        ORDER BY start_time DESC
+    </select>
+
+    <select id="getContestsByType" resultMap="contestResultMap" resultType="Contest">
+        SELECT * FROM t_contest
+        WHERE type=#{type}
+        ORDER BY start_time DESC
+    </select>
+
+    <select id="getContestsByStatus" resultMap="contestResultMap" resultType="Contest">
+        SELECT * FROM t_contest
+        WHERE status=#{status}
+        ORDER BY start_time DESC
+    </select>
+
+    <select id="getContestByName" resultMap="contestResultMap" resultType="Contest">
+        SELECT * FROM t_contest
+        WHERE name=#{name}
+    </select>
+
+    <select id="getContestById" resultMap="contestResultMap" resultType="Contest">
+        SELECT * FROM t_contest
+        WHERE id=#{id}
+    </select>
+
+    <select id="getProblemsByKeyWord" resultMap="contestResultMap" resultType="Contest">
+        SELECT * FROM t_contest
+        WHERE name
+        LIKE '%${_parameter}%'
+    </select>
+
+    <select id="getProblemsByContestID" resultMap="com.bppleman.dao.ProblemDao.problemResultMap" resultType="Problem">
+        SELECT p.* FROM t_contest_problem c, t_problem p
+        WHERE c.problem_id=p.id
+        AND c.contest_id=#{id}
+    </select>
+
+    <select id="getProblemsByLabel" resultMap="com.bppleman.dao.ProblemDao.problemResultMap" resultType="Problem">
+        SELECT p.id,p.title FROM t_problem p, t_problem_label pl
+        WHERE p.id=pl.problem_id
+        AND pl.label=#{label}
+        ORDER BY p.id
+    </select>
+
+    <insert id="insertContest" parameterType="Contest" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_contest<trim prefix="(" suffix=")" suffixOverrides="," >
+        <if test="name != null" >name,</if>
+        <if test="startTime != null" >start_time,</if>
+        <if test="endTime != null" >end_time,</if>
+        <if test="duration != null" >duration,</if>
+        <if test="status != null" >status,</if>
+        <if test="type != null" >type,</if>
+        <if test="author != null" >author,</if>
+        <if test="password != null" >password,</if>
+        <if test="note != null" >note</if>
+    </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="name != null" >#{name},</if>
+            <if test="startTime != null" >#{startTime},</if>
+            <if test="endTime != null" >#{endTime},</if>
+            <if test="duration != null" >#{duration},</if>
+            <if test="status != null" >#{status},</if>
+            <if test="type != null" >#{type},</if>
+            <if test="author != null" >#{author},</if>
+            <if test="password != null" >#{password},</if>
+            <if test="note != null" >#{note}</if>
+        </trim>
+    </insert>
+
+    <insert id="insertContestProblem">
+        INSERT INTO t_contest_problem (contest_id, problem_id)
+        VALUES
+        <foreach collection="param2" item="problemId" separator=",">
+            (#{param1}, #{problemId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteContestProblem">
+        DELETE FROM t_contest_problem
+        WHERE contest_id = #{contestId}
+    </delete>
+</mapper>

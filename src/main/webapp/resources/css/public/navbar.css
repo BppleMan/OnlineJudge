@@ -1,0 +1,20 @@
+nav.navbar {
+    margin-bottom: 0;
+}
+
+ul.nav.navbar-nav li a{
+    user-select: none;
+    font-size: 18px;
+}
+
+ul.dropdown-menu li a {
+    user-select: none;
+}
+
+ul.nav.navbar-nav.navbar-right {
+    margin-right: 0;
+}
+
+ul.nav.navbar-nav li.dropdown ul.dropdown-menu a.non-active {
+    cursor: pointer;
+}

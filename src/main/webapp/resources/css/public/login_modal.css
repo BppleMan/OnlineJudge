@@ -1,0 +1,31 @@
+.modal-content {
+    background-color: #2C3E50;
+}
+.modal-content form {
+    width: 60%;
+    margin: 20px auto;
+}
+
+.modal-content form .login-form-row {
+    margin: 0;
+    padding: 0;
+    display: block;
+    margin: 20px auto;
+}
+
+.modal-content form .login-form-row h2 {
+    margin: 0;
+}
+
+.modal-content form .login-form-row button {
+    width: 100%;
+}
+
+
+
+.modal-content form .login-form-row .login-form-col .login-form-row {
+    height: 41px;
+    vertical-align: middle;
+    background-color: #1abc9c;
+    text-align: right;
+}

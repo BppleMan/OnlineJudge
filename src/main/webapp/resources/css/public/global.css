@@ -1,0 +1,21 @@
+@import "../../lib/bootstrap/css/bootstrap.min.css";
+@import "../../lib/flat-ui/css/flat-ui.min.css";
+@import "../../lib/sidebar/css/style.css";
+@import "login_modal.css";
+
+body {
+    background-color: #2C3E50;
+}
+
+form .submit-button-row {
+    text-align: center;
+    width: 100%;
+}
+
+a {
+    cursor: pointer;
+}
+
+.bootbox-body {
+    color: whitesmoke;
+}

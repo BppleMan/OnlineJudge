@@ -1,0 +1,25 @@
+.container .jumbotron.create-problem .input-group {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+}
+
+.container .jumbotron.create-problem .title {
+    text-align: center;
+}
+
+.container .jumbotron.create-problem .title .input-group {
+    width: 40%;
+}
+
+.container .jumbotron.create-problem h1{
+    font-size: 24px;
+}
+
+.container .jumbotron.create-problem .submit-button-row {
+    text-align: center;
+}
+
+.container .jumbotron.create-problem .submit-button-row button {
+    margin: 0% auto;
+}

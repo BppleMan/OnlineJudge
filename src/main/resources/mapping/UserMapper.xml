@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.UserDao">
+    <resultMap type="User" id="userResultMap">
+        <id property="id" column="id"/>
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="email" column="email" />
+        <result property="type" column="type" />
+    </resultMap>
+
+    <select id="getAllUsers" resultMap="userResultMap" resultType="User">
+        SELECT *
+        FROM t_user
+    </select>
+
+    <select id="getUserByUsername" resultMap="userResultMap">
+        SELECT *
+        FROM t_user
+        WHERE username=#{username}
+    </select>
+
+    <select id="getUsernameByIDs" resultType="map">
+        SELECT id,username FROM t_user
+        WHERE id in
+        <foreach collection="list" item="id" open="(" close=")"
+                 separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="username != null" >username,</if>
+            <if test="password != null" >password,</if>
+            <if test="email != null and !&quot;&quot;.equals(email.trim())" >email,</if>
+            <if test="type != null and !&quot;&quot;.equals(type.trim())" >type</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="username != null" >#{username},</if>
+            <if test="password != null" >#{password},</if>
+            <if test="email != null and !&quot;&quot;.equals(email.trim())" >#{email},</if>
+            <if test="type != null and !&quot;&quot;.equals(type.trim())" >#{type}</if>
+        </trim>
+    </insert>
+
+    <insert id="insertProblemUserSolve">
+        INSERT INTO t_problem_user_solve
+        (user_id, problem_id, solved)
+        VALUES
+        (#{userId}, #{problemId}, #{isSolved})
+    </insert>
+
+
+</mapper>
