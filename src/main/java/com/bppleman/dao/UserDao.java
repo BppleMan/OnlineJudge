@@ -12,7 +12,8 @@ import java.util.Map;
  */
 @Repository
 public interface UserDao {
-    User getUserByUsername(String username);
-    int insertUser(User user);
+    User getUserByParam(String columnName, String value);
+    Integer insertUser(User user);
+    Integer updateUser(User user);
     List<Map<Object, Object>> getUsernameByIDs(List<Integer> ids);
 }

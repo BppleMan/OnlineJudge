@@ -1,0 +1,39 @@
+body {
+    overflow: hidden;
+}
+
+.container.information {
+    margin-top: 100px;
+}
+
+.container .row {
+    height: 70%;
+}
+.container .sidebar {
+    display: inline-block;
+    height: 100%;
+    background-color: whitesmoke;
+    border-radius: 4px;
+    padding: 0;
+}
+
+.container .content {
+    display: inline-block;
+    height: 100%;
+    background-color: whitesmoke;
+    border-radius: 4px;
+    padding: 0;
+}
+
+.container .sidebar a {
+    line-height: inherit;
+}
+
+.container .sidebar a:hover {
+    color: #00a1cb;
+}
+
+.list-group-item.brand {
+    font-size: 24px;
+    font-weight: 800;
+}

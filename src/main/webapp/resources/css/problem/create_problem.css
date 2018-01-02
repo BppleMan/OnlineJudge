@@ -16,10 +16,10 @@
     font-size: 24px;
 }
 
-.container .jumbotron.create-problem .submit-button-row {
+.container .jumbotron.create-problem .center-row {
     text-align: center;
 }
 
-.container .jumbotron.create-problem .submit-button-row button {
+.container .jumbotron.create-problem .center-row button {
     margin: 0% auto;
 }

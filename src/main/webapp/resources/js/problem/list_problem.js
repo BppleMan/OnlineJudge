@@ -2,50 +2,75 @@
  * Created by BppleMan on 2017/11/13.
  */
 
-$(document).ready(function () {
+var basePath;
+var labels;
+
+$(function () {
     $("ul.pagination").find("a").each(function () {
         if (this.text != "Prev" && this.text != "Next"){
             if (this.href == document.location.href) {
-                $(this).parent().addClass('active'); // this.className = 'active';
+                $(this).parent().addClass("active");
             }
+        }
+    });
+
+    $("select").select2().change(function () {
+        var type = $(this).val();
+        $("#type").val(type);
+        var searchKeyWord = $(".search-keyword");
+        if (type == "label") {
+            searchKeyWord.empty();
+            var select1 = $("<select name='labelTypeSelect' placeholder='选择分类' onchange='listenLabelSelect(this)'></select>");
+            select1.addClass("text-center form-control select select-inverse select-block mbl");
+            var nullOption = $("<option></option>");
+            select1.append(nullOption);
+            for (var label in labels) {
+                var option = $("<option value="+ label +"></option>").text(label);
+                select1.append(option);
+            }
+            var select2 = $("<select name='labelValueSelect' placeholder='选择题型' onchange='listenLabelSelect(this)'></select>").html("<option></option>");
+            select2.addClass("text-center form-control select select-inverse select-block mbl");
+            var searchBtn = $("<button type='button' class='btn btn-default btn-block' onclick='searchProblem()'>搜索</button>")
+            searchKeyWord.append(select1);
+            searchKeyWord.append(select2);
+            searchKeyWord.append(searchBtn);
+            searchKeyWord.append("<input name='keyWord' type='hidden' class='form-control' value='${keyWord}'>");
+            select1.select2();
+            select2.select2();
+        } else {
+            var div = $("<div class='input-group'></div>");
+            var input = $("<input id='keyWord' name='keyWord' type='text' class='form-control'>");
+            var span = $("<span class='input-group-btn'><button class='btn btn-default' type='button' onclick='searchProblem()'>搜索</button></span>");
+            div.append(input);
+            div.append(span);
+            searchKeyWord.html(div);
         }
     });
 });
 
-function jumpToPage(contextPath) {
-    var url = new String(contextPath + "/problem?page=");
-    url += $("input[name='pageInputNumber']").val();
-    window.location.href = url;
+function listenLabelSelect(select) {
+    var type = $(select).val();
+    var select2 = $(select).parent().find("select").eq(1);
+    if (select.name == "labelTypeSelect") {
+        select2.empty();
+        select2.append("<option></option>");
+        for (var i = 0; i < labels[type].length; i++) {
+            var obj = labels[type][i];
+            select2.append("<option>"+obj+"</option>");
+        }
+        select2.select2();
+    } else if (select.name == "labelValueSelect") {
+        $("input[name='keyWord']").val($(select).val());
+    }
 }
 
-function searchProblem(contextPath) {
+function searchProblem() {
     console.log($("#type").val());
     var type = $("#type").val();
     var keyWord = $("input[name='keyWord']").val();
     if (keyWord == null || keyWord.trim() == "")
         return;
-    location.href = contextPath + "/problem/list_problem?page=1&tp=" + type + "&kw=" + keyWord;
-}
-
-function selectType(type, text, contextPath) {
-    $("#type").val(type);
-    $("#type-button").html(text + " <span class='caret'></span>");
-    if (type != "label") {
-        $(".search-keyword").html("<div class='input-group'>\n" +
-            "<input id='keyWord' name='keyWord' type='text' class='form-control'>\n" +
-            "<span class='input-group-btn'><button class='btn btn-default' type='button' onclick='searchProblem(\""+contextPath+"\")'>搜索</button></span>\n" +
-            "</div>");
-    } else {
-        $(".search-keyword").html("<div class='tagsinput-primary'>\n" +
-            "<input id='keyWord' name='keyWord' class='tagsinput' data-role='tagsinput'>\n" +
-            "</div>\n" +
-            "<span class='help-block'>每输入一个标签按下回车键或英文半角符逗号以确定</span>\n");
-        $(".tagsinput").tagsinput();
-        var button = $("<button class='btn btn-default' type='button' onclick='searchProblem(\""+contextPath+"\")'></button>").text("搜索");
-        var div = $("<div class='<div class=\"input-group\">'></div>");
-        div.append(button);
-        $(".search-keyword").append(div);
-    }
+    location.href = basePath + "/problem/list_problem?page=1&tp=" + type + "&kw=" + keyWord;
 }
 
 function inputChange(input, page_max) {

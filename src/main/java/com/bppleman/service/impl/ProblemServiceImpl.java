@@ -2,12 +2,14 @@ package com.bppleman.service.impl;
 
 import com.bppleman.controller.ProblemController;
 import com.bppleman.dao.ProblemDao;
-import com.bppleman.dao.ProblemRatioDao;
 import com.bppleman.entity.IDParam;
 import com.bppleman.entity.Problem;
+import com.bppleman.entity.ProblemLabel;
 import com.bppleman.entity.ProblemRatio;
+import com.bppleman.service.CountService;
+import com.bppleman.service.ProblemLabelService;
+import com.bppleman.service.ProblemRatioService;
 import com.bppleman.service.ProblemService;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +26,16 @@ import java.util.Map;
 public class ProblemServiceImpl implements ProblemService {
 
     @Resource
-    private ProblemDao problemDao = null;
+    private ProblemDao problemDao;
 
     @Resource
-    private ProblemRatioDao problemRatioDao = null;
+    private ProblemLabelService problemLabelService;
 
     @Resource
-    private DataSourceTransactionManager transactionManager = null;
+    private ProblemRatioService problemRatioService;
+
+    @Resource
+    private CountService countService;
 
     @Override
     public List<Problem> getAllProblems() {
@@ -38,14 +43,14 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public List<Problem> getProblemsWithPage(String type, String keyWord, int page, int length) {
-        int offset = (page - 1) * length;
+    public List<Problem> getProblemsWithPage(String type, String keyWord, Integer page, Integer length) {
+        Integer offset = (page - 1) * length;
         if ((type == null || "".equals(type.trim()))&& (keyWord == null || "".equals(type.trim()))) {
             return problemDao.getProblemsWithPage(offset, length);
         } else if (type.equals(ProblemController.Type.ID)) {
-            int id = Integer.parseInt(keyWord);
+            Integer id = Integer.parseInt(keyWord);
             List<Problem> problems = new ArrayList<>();
-            problems.add(getProblemByID(id));
+            problems.add(getProblemByProblemId(id));
             return problems;
         }
         else if (type.equals(ProblemController.Type.AUTHOR)) {
@@ -58,50 +63,44 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public Problem getProblemByID(int id) {
-        return problemDao.getProblemByID(id);
+    public Problem getProblemByProblemId(Integer id) {
+        return problemDao.getProblemByProblemId(id);
     }
 
-    private List<Problem> getProblemsByAuthorWithPage(String author, int offset, int length) {
+    private List<Problem> getProblemsByAuthorWithPage(String author, Integer offset, Integer length) {
         return problemDao.getProblemsByAuthorWithPage(author, offset, length);
     }
 
-    private List<Problem> getProblemsByTitleWithPage(String title, int offset, int length) {
+    private List<Problem> getProblemsByTitleWithPage(String title, Integer offset, Integer length) {
         return problemDao.getProblemsByTitleWithPage(title, offset, length);
     }
 
-    private List<Problem> getProblemsByLabelWithPage(String tags, int offset, int length) {
-        List<String> labels = new ArrayList<>();
-        String []temp = tags.split(",\\s*");
-        for (int i = 0; i < temp.length; i++) {
-            labels.add(temp[i]);
-        }
-        return problemDao.getProblemsByLabelWithPage(labels, offset, length);
+    private List<Problem> getProblemsByLabelWithPage(String label, Integer offset, Integer length) {
+        return problemLabelService.getProblemsByLabelValueWithPage(label, offset, length);
     }
 
     @Override
-    public int getCount(String type, String keyWord) {
+    public Integer getCount(String type, String keyWord) {
         if ((type == null || "".equals(type.trim()))&& (keyWord == null || "".equals(type.trim()))) {
-            return problemDao.getCount();
+            return countService.getCount(null, "problem", null, null);
         } else if (type.equals(ProblemController.Type.ID)) {
             return 1;
-        }
-        else if (type.equals(ProblemController.Type.AUTHOR)) {
-            return problemDao.getCountByAuthor(keyWord);
+        } else if (type.equals(ProblemController.Type.AUTHOR)) {
+            return countService.getCount(CountService.EQUAL, "problem", type, keyWord);
         } else if (type.equals(ProblemController.Type.TITLE)){
-            return problemDao.getCountByTitle(keyWord);
-        } else {
-            List<String> labels = new ArrayList<>();
-            String []temp = keyWord.split(",\\s*");
-            for (int i = 0; i < temp.length; i++) {
-                labels.add(temp[i]);
-            }
-            return problemDao.getCountByLabel(labels);
-        }
+            return countService.getCount(CountService.LIKE, "problem", type, keyWord);
+        } else if (type.equals(ProblemController.Type.LABEL)){
+            return problemLabelService.getProblemCountByLabelValue(keyWord);
+        } else return null;
     }
 
+    /**
+     * 这是用于在查看答题状态时，转换显示problem的id或title
+     * @param ids
+     * @return 返回一个id-title的键值对Map
+     */
     @Override
-    public Map<Long, String> getIDTitleMapByIDs(List<Integer> ids) {
+    public Map<Long, String> getProblemIdToTitleMapByProblemIds(List<Integer> ids) {
         List<Map<Object, Object>> problemMaps = problemDao.getProblemTitleByIDs(ids);
         Map<Long, String> resultMap = new HashMap<>();
         for (Map<Object, Object> map: problemMaps) {
@@ -113,26 +112,96 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     @Transactional
     public boolean insertProblem(Problem problem) {
-        if (problemDao.insertProblem(problem) == 1) {
-            problemDao.insertProblemLabels(problem.getId(), problem.getLabels());
-            ProblemRatio problemRatio = new ProblemRatio();
-            problemRatio.setIdParam(new IDParam(null, problem.getId(), null, null));
-            problemRatioDao.insertProblemRatio(problemRatio);
-            return true;
+        boolean result = true;
+//        插入题目
+        if (problemDao.insertProblem(problem) != 1) {
+            result = false;
         }
-        return false;
+//        插入题目标签
+        if (result == true) {
+            for (ProblemLabel problemLabel : problem.getProblemLabels()) {
+                result = problemLabelService.insertProblemLabel(problemLabel);
+            }
+        }
+//        插入题目通过率（初始化工作）
+        if (result == true) {
+            ProblemRatio problemRatio = new ProblemRatio();
+            problemRatio.setAcTime(0);
+            problemRatio.setSubmitTime(0);
+            problemRatio.setRatioValue(0.0);
+            problemRatio.setProblemId(problem.getId());
+            result = problemRatioService.insertProblemRatio(problemRatio);
+        }
+        return result;
     }
 
     @Override
     @Transactional
-    public boolean deleteProblemByID(int problemId) {
-        if (problemDao.deleteProblemById(problemId) == 1) {
-            problemDao.deleteProblemLabelsByProblemId(problemId);
-            List<IDParam> idParams = new ArrayList<>();
-            idParams.add(new IDParam(null, problemId, null, null));
-            problemRatioDao.deleteProblemRatio(idParams);
-            return true;
+    public boolean updateProblem(Problem problem) {
+        boolean result = true;
+        if (problemDao.updateProblem(problem) != 1)
+            result = false;
+        if (result == true) {
+            List<ProblemLabel> oldProblemLabels = problemLabelService.getProblemLabelByProblemId(problem.getId());
+            List<ProblemLabel> newProblemLabels = problem.getProblemLabels();
+            for (ProblemLabel oldProblemLabel : oldProblemLabels) {
+                for (ProblemLabel newProblemLabel : newProblemLabels) {
+                    if (oldProblemLabel.getId().equals(newProblemLabel.getId())) {
+                        if (!oldProblemLabel.getLabel().equals(newProblemLabel.getLabel()))
+//                            如果新旧标签组中同时存在同一个标签（id相同）
+//                            但此时该ProblemLabel中的label不相同
+//                            那么应该更新该ProblemLabel（以新的为主）
+                            result = problemLabelService.updateProblemLabel(newProblemLabel);
+                        break;
+                    }
+                }
+            }
+            for (ProblemLabel newProblemLabel : newProblemLabels) {
+                boolean contains = false;
+                for (ProblemLabel oldProblemLabel : oldProblemLabels) {
+                    if (oldProblemLabel.getLabel().equals(newProblemLabel.getLabel())) {
+                        contains = true;
+                        break;
+                    }
+                }
+//                如果旧的标签不包含某个新标签
+//                说明该新标签需要被插入
+                if (contains == false)
+                    result = problemLabelService.insertProblemLabel(newProblemLabel);
+            }
+            for (ProblemLabel oldProblemLabel : oldProblemLabels) {
+                boolean contains = false;
+                for (ProblemLabel newProblemLabel : newProblemLabels) {
+                    if (newProblemLabel.getLabel().equals(oldProblemLabel.getLabel())) {
+                        contains = true;
+                        break;
+                    }
+                }
+//                如果新标签不包含某个旧标签
+//                说明该旧标签需要被删除
+                if (contains == false)
+                    result = problemLabelService.deleteProblemLabelByProblemLabelId(oldProblemLabel.getId());
+            }
         }
-        return false;
+        if (result == true) {
+            result = problemRatioService.updateProblemRatio(problem.getProblemRatio());
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteProblemByProblemId(Integer problemId) {
+        boolean result = true;
+        if (problemDao.deleteProblemById(problemId) != 1) {
+            result = false;
+        }
+        if (result == true) {
+            result = problemLabelService.deleteProblemLabelByProblemId(problemId);
+        }
+        if (result == true) {
+            result = problemRatioService.deleteProblemRatio(new IDParam(-1, problemId, -1, -1));
+        }
+        return result;
     }
 }

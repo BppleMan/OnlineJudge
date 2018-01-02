@@ -17,39 +17,46 @@ public class ProblemRatioServiceImpl implements ProblemRatioService {
     @Resource
     private ProblemRatioDao problemRatioDao = null;
 
+    public List<ProblemRatio> getProblemRatio() {
+        return problemRatioDao.getProblemRatio();
+    }
+
     @Override
-    public List<ProblemRatio> getProblemRatio(IDParam idParam) {
-        return problemRatioDao.getProblemRatio(idParam);
+    public Map<Integer, ProblemRatio> getProblemRatioMap(IDParam param) {
+        Map<Integer, ProblemRatio> problemRatioMap = new HashMap<>();
+        List<ProblemRatio>  problemRatios = getProblemRatio();
+        for (ProblemRatio pr : problemRatios) {
+            problemRatioMap.put(pr.getProblemId(), pr);
+        }
+        return problemRatioMap;
+    }
+
+    @Override
+    public ProblemRatio getProblemRatioByProblemId(IDParam param) {
+        return problemRatioDao.getProblemRatioByProblemId(param.getProblemId());
     }
 
     @Override
     public boolean insertProblemRatio(ProblemRatio problemRatio) {
-        if (problemRatioDao.insertProblemRatio(problemRatio) == 1)
-            return true;
-        return false;
+        boolean result = true;
+        if (problemRatioDao.insertProblemRatio(problemRatio) != 1)
+            result = false;
+        return result;
     }
 
     @Override
     public boolean updateProblemRatio(ProblemRatio problemRatio) {
-        if (problemRatioDao.updateProblemRatio(problemRatio) > 0)
-            return true;
-        return false;
+        boolean result = true;
+        if (problemRatioDao.updateProblemRatio(problemRatio) == 0)
+            result = false;
+        return result;
     }
 
     @Override
-    public boolean deleteProblemRatio(List<IDParam> idParams) {
-        if (problemRatioDao.deleteProblemRatio(idParams) == 1)
-            return true;
-        return false;
-    }
-
-    @Override
-    public Map<Integer, ProblemRatio> getProblemRatioMap(IDParam idParam) {
-        Map<Integer, ProblemRatio> problemRatioMap = new HashMap<>();
-        List<ProblemRatio>  problemRatios = getProblemRatio(idParam);
-        for (ProblemRatio pr : problemRatios) {
-            problemRatioMap.put(pr.getIdParam().getProblemId(), pr);
-        }
-        return problemRatioMap;
+    public boolean deleteProblemRatio(IDParam param) {
+        boolean result = true;
+        if (problemRatioDao.deleteProblemRatio(param.getProblemId()) != 1)
+            result = false;
+        return result;
     }
 }

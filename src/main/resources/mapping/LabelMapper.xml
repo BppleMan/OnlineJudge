@@ -4,22 +4,29 @@
 
 <mapper namespace="com.bppleman.dao.LabelDao">
     <resultMap type="Label" id="labelResultMap">
-        <id property="id" column="id"/>
-        <result property="label_type" column="type"/>
-        <result property="label_value" column="labelValue"/>
+        <id property="id" column="id"></id>
+        <result property="type" column="type"></result>
+        <collection property="values" column="type" select="getValueByType"></collection>
     </resultMap>
 
-    <select id="getAllTypes" resultType="String">
-        SELECT type FROM t_label
+    <select id="getLabels" resultMap="labelResultMap" resultType="Label">
+        SELECT type FROM label
         GROUP BY type
     </select>
-
-    <select id="getAllLabels" resultMap="labelResultMap" resultType="Label">
-        SELECT * FROM t_label
+    
+    <select id="getLabelValues" resultType="string">
+        SELECT value FROM label
     </select>
 
-    <select id="getLabelsByType" resultMap="labelResultMap" resultType="Label">
-        SELECT * FROM t_label
-        WHERE type=#{type}
+    <select id="getValueByType" resultType="string">
+        SELECT value FROM label
+        WHERE type=#{param1}
+    </select>
+
+    <select id="getProblemByValue" resultMap="com.bppleman.dao.ProblemDao.problemResultMap">
+        SELECT p.*
+        FROM problem p , problem_label pl
+        WHERE p.id = pl.problem_id
+        AND pl.label = #{param1}
     </select>
 </mapper>

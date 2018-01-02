@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DataDao {
-    Data getDataByProblemIDAndShellName(int problemId, String shellName);
+    Data getDataByProblemIDAndShellName(Integer problemId, String shellName);
 }

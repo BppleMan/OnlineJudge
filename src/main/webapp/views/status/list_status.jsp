@@ -99,22 +99,22 @@
             </c:forEach>
             </tbody>
         </table>
-        <div class="submit-button-row">
+        <div class="center-row">
             <ul class="pagination">
                 <li id="page_number_foot_pre">
-                    <a href="${basePath}/status/list_status/${pageNumber == 1 ? pageNumber : pageNumber - 1}${idParam.toPath()}">Prev</a>
+                    <a href="${basePath}/status/list_status?page=${pageNumber == 1 ? pageNumber : pageNumber - 1}${idParam.toPath()}">Prev</a>
                 </li>
                 <c:forEach var="item" varStatus="i" begin="1" end="${pageCount}" step="1">
                     <li class="page_number_li">
-                        <a href="${basePath}/status/list_status/${i.index}${idParam.toPath()}">${i.index}</a>
+                        <a href="${basePath}/status/list_status?page=${i.index}${idParam.toPath()}">${i.index}</a>
                     </li>
                 </c:forEach>
                 <li id="page_number_foot_next">
-                    <a href="${basePath}/status/list_status/${pageNumber == pageCount ? pageCount : pageNumber + 1}${idParam.toPath()}">Next</a>
+                    <a href="${basePath}/status/list_status?page=${pageNumber == pageCount ? pageCount : pageNumber + 1}${idParam.toPath()}">Next</a>
                 </li>
             </ul>
-            <c:if test="${idParam.contestId != -1}">
-                <button class="btn btn-embossed btn-primary" onclick="location.href = '${basePath}/contest/show_contest?contestId=${idParam.contestId}';">
+            <c:if test="${not empty isContestStatus && isContestStatus == true}">
+                <button class="btn btn-embossed btn-primary" onclick="location.href = '${basePath}/contest/show_contest?page=1&contestId=${idParam.contestId}&note=${contestNote}';">
                     <em class="glyphicon glyphicon-arrow-left"></em>
                     返回竞赛题目
                 </button>

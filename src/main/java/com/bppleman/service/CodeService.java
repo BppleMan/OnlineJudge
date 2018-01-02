@@ -5,11 +5,10 @@ import com.bppleman.entity.IDParam;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public interface CodeService {
-    List<Code> getCode(IDParam idParam);
-    Code getCodeByID(int id);
+    List<Code> getCode(IDParam param);
+    Code getCodeById(Integer codeId);
     boolean insertCode(Code code);
 }

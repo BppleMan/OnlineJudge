@@ -28,44 +28,54 @@
         <div class="row clearfix">
             <div class="col-md-12 column">
                 <h3 class="text-center">
-                    ${requestScope.problem.id}:${requestScope.problem.getTitle()}
+                    ${problem.id}:${problem.getTitle()}
                 </h3>
                 <span class="label label-primary">Description</span>
                 <div class="form-control">
-                    ${requestScope.problem.description}
+                    ${problem.description}
                 </div>
                 <span class="label label-primary">Input</span>
                 <div class="form-control">
-                    ${requestScope.problem.input}
+                    ${problem.input}
                 </div>
                 <span class="label label-primary">Output</span>
                 <div class="form-control">
-                    ${requestScope.problem.output}
+                    ${problem.output}
                 </div>
                 <span class="label label-primary">Sample Input</span>
-                <pre>${requestScope.problem.sampleInput}</pre>
+                <pre>${problem.sampleInput}</pre>
                 <span class="label label-primary">Sample Output</span>
-                <pre>${requestScope.problem.sampleOutput}</pre>
+                <pre>${problem.sampleOutput}</pre>
                 <span class="label label-primary">Hints</span>
-                <pre>${requestScope.problem.hints}</pre>
+                <pre>${problem.hints}</pre>
 
                 <span class="label label-primary">Author</span>
                 <div class="form-control">
-                    ${requestScope.problem.author}
+                    ${problem.author}
                 </div>
-                <div class="btn-group btn-group-md col-md-offset-5">
+                <div style="height: 20px"></div>
+                <c:choose>
+                    <c:when test="${not empty isContestProblem && isContestProblem == true}">
+                        <c:set var="urlParam">
+                            ?problemId=${problem.id}&contestId=${contestId}
+                        </c:set>
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="urlParam">
+                            ?problemId=${problem.id}
+                        </c:set>
+                    </c:otherwise>
+                </c:choose>
+                <div class="center-row">
                     <button class="btn btn-default" type="button"
-                            onclick="document.location.href = '${basePath}${codePath}?problemId=${problem.id}'">
+                            onclick="document.location.href = '${basePath}${codeProblemPath}${urlParam}'">
                         <em class="glyphicon glyphicon-pencil"></em>
-                        Submit
+                        编辑代码
                     </button>
-                    <c:if test="${not empty contestId}">
-                        <c:set var="contestPath">&contestId=${contestId}</c:set>
-                    </c:if>
                     <button class="btn btn-default" type="button"
-                            onclick="document.location.href = '${basePath}/status${statusPath}?1=1${contestPath}&problemId=${problem.id}'">
+                            onclick="document.location.href = '${basePath}/status/list_status${urlParam}&page=1'">
                         <em class="glyphicon glyphicon-list"></em>
-                        Status
+                        答题状态
                     </button>
                 </div>
             </div>

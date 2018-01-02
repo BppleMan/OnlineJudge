@@ -26,7 +26,7 @@ public class JudgeCore {
             inputStream.start();
             PrintThread errorStream = new PrintThread(process.getErrorStream());
             errorStream.start();
-            int value = process.waitFor();
+            Integer value = process.waitFor();
             compileInfo = inputStream.getCompileInfo();
             compileInfo += errorStream.getCompileInfo();
         } catch (IOException e) {
@@ -80,8 +80,8 @@ public class JudgeCore {
         return result;
     }
 
-    public int  calculatorTime(String resourcePath) {
-        int result = -1;
+    public Integer  calculatorTime(String resourcePath) {
+        Integer result = -1;
         String time = getInfo(resourcePath, "/time");
         String regex = "real\t\\dm\\d\\.\\d\\d\\ds";
         String str1 = match(time, regex);
@@ -104,8 +104,8 @@ public class JudgeCore {
         return null;
     }
 
-    public int calculatorMemory(String resourcePath) {
-        int result = -1;
+    public Integer calculatorMemory(String resourcePath) {
+        Integer result = -1;
         String info = getInfo(resourcePath, "/info");
         String regex = "memory:\\s+\\d+\\s";
         String str1 = match(info.toString(), regex);

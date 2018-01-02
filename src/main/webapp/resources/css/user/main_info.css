@@ -1,0 +1,16 @@
+.form-horizontal {
+    margin: 20px;
+}
+
+.form-horizontal .form-group {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.form-control[disabled] {
+    color: #34495e;
+}
+
+#alert {
+    display: none;
+}

@@ -1,43 +1,45 @@
 package com.bppleman.entity;
 
+import java.util.List;
+
 /**
  * Created by BppleMan on 2017/11/24.
  */
 public class Label {
-    private int id;
-    private String labelType;
-    private String labelValue;
+    private Integer id;
+    private String type;
+    private List<String> values;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getLabelType() {
-        return labelType;
+    public String getType() {
+        return type;
     }
 
-    public void setLabelType(String labelType) {
-        this.labelType = labelType;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getLabelValue() {
-        return labelValue;
+    public List<String> getValues() {
+        return values;
     }
 
-    public void setLabelValue(String labelValue) {
-        this.labelValue = labelValue;
+    public void setValues(List<String> values) {
+        this.values = values;
     }
 
     @Override
     public String toString() {
         return "Label{" +
                 "id=" + id +
-                ", labelType='" + labelType + "\'" +
-                ", labelValue='" + labelValue + "\'" +
+                ", type='" + type + "\'" +
+                ", values=" + values +
                 "}\n";
     }
 }

@@ -17,7 +17,7 @@ public class DataServiceImpl implements DataService {
     private DataDao dataDao;
 
     @Override
-    public Data getDataByProblemIDAndShellName(int problemId, String shellName) {
+    public Data getDataByProblemIDAndShellName(Integer problemId, String shellName) {
         return dataDao.getDataByProblemIDAndShellName(problemId, shellName);
     }
 }

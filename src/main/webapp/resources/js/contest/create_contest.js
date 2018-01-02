@@ -11,7 +11,7 @@ $(function () {
                 var password = $("<input type='password' name='password' class='form-control input-group'>");
                 form_group.append(label);
                 form_group.append(password);
-                $(".submit-button-row").before(form_group);
+                $(".center-row").before(form_group);
             }
         } else {
             if (form_group != null) {

@@ -7,21 +7,22 @@ import java.util.List;
  * Created by BppleMan on 2017/11/8.
  */
 public class User implements Serializable{
-    private int id;
+    private Integer id;
     private String username;
     private String password;
+    private String nickname;
     private String email;
+    private String telephone;
     private String type;
 
     public static final String Normal = "Normal";
     public static final String Admin = "Admin";
 
-
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -41,12 +42,28 @@ public class User implements Serializable{
         this.password = password;
     }
 
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     public String getType() {
@@ -57,14 +74,24 @@ public class User implements Serializable{
         this.type = type;
     }
 
+    public static String getNormal() {
+        return Normal;
+    }
+
+    public static String getAdmin() {
+        return Admin;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", username='" + username + "\'" +
-                ", password='" + password + "\'" +
-                ", email='" + email + "\'" +
-                ", type='" + type + "\'" +
-                "}\n";
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", email='" + email + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", type='" + type + '\'' +
+                '}';
     }
 }

@@ -12,20 +12,20 @@
     </resultMap>
 
     <select id="getCodeByID" resultMap="codeResultMap">
-        SELECT * FROM t_code
-        WHERE id=#{id}
+        SELECT * FROM code
+        WHERE id = #{param1}
     </select>
     
     <select id="getCode" resultMap="codeResultMap">
-        SELECT * FROM t_code
-        WHERE contest_id = #{contestId}
-        AND exam_id = #{examId}
-        AND user_id=#{userId}
-        AND problem_id=#{problemId}
+        SELECT * FROM code
+        WHERE contest_id = #{param.contestId}
+        AND exam_id = #{param.examId}
+        <if test="param.userId != -1">AND user_id=#{param.userId}</if>
+        <if test="param.problemId != -1">AND problem_id=#{param.problemId}</if>
     </select>
 
-    <insert id="insertCode" parameterType="Code" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO t_code(user_id, problem_id, contest_id, exam_id, length, code_value, language)
+    <insert id="insertCode" parameterType="Code" keyProperty="id">
+        INSERT INTO code(user_id, problem_id, contest_id, exam_id, length, code_value, language)
         VALUES (#{idParam.userId}, #{idParam.problemId}, #{idParam.contestId}, #{idParam.examId}, #{length}, #{codeValue}, #{language})
     </insert>
 </mapper>

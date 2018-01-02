@@ -1,9 +1,11 @@
 package com.bppleman.service;
 
+import com.bppleman.controller.ContestController;
 import com.bppleman.entity.Contest;
 import com.bppleman.entity.Problem;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,72 +18,35 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by BppleMan on 2017/11/24.
  */
-@RunWith(SpringJUnit4ClassRunner.class)     //表示继承了SpringJUnit4ClassRunner类
-@ContextConfiguration(locations = {"classpath:spring-mybatis.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:spring-mybatis.xml")
 
 public class ContestServiceTest {
-
-    @Resource
-    private ContestService contestService = null;
-
     @Test
     public void getAllContests() throws Exception {
-        List<Contest> contests = contestService.getAllContests();
+    }
+
+    @Test
+    public void getContestsWithPage() throws Exception {
+        List<Contest> contests = contestService.getContestsWithPage(
+                ContestController.Type.STATUS,
+                Contest.Status.END, 1, 5);
         System.out.println(contests);
     }
 
     @Test
-    public void getProblemsByContestID() throws Exception {
-        List<Problem> problems = contestService.getProblemsByContestID(1);
-        System.out.println(problems);
+    public void getContestById() throws Exception {
     }
 
     @Test
-    public void getProblemsByLabel() throws Exception {
-        List<Problem> problems = contestService.getProblemsByLabel("入门");
-        System.out.println(problems);
+    public void getCount() throws Exception {
     }
 
     @Test
     public void insertContest() throws Exception {
-        Contest contest = new Contest();
-        contest.setName("test");
-        contest.setStartTime(new Timestamp(System.currentTimeMillis()));
-        long duration = (1 * 24 * 3600) * 1000;
-        Date endTime = new Timestamp(contest.getStartTime().getTime() + duration);
-        contest.setEndTime(endTime);
-        contest.setDuration(duration);
-        contest.setStatus(Contest.Status.RUNNING);
-        contest.setType(Contest.Type.PUBLIC);
-        contestService.insertContest(contest);
-    }
-
-    @Test
-    public void getContestsByAuthor() throws Exception {
-    }
-
-    @Test
-    public void getContestsByType() throws Exception {
-    }
-
-    @Test
-    public void getContestsByStatus() throws Exception {
-    }
-
-    @Test
-    public void getContestByName() throws Exception {
-    }
-
-    @Test
-    public void getContestById() throws Exception {
-        Contest contest = contestService.getContestById(1);
-        System.out.println(contest);
-        System.out.println(contest.getProblems());
     }
 
     @Test
@@ -89,20 +54,24 @@ public class ContestServiceTest {
     }
 
     @Test
-    public void insertContestProblem() throws Exception {
-        List<Integer> problemIds = new ArrayList<>();
-        problemIds.add(100011);
-        problemIds.add(100012);
-        problemIds.add(100013);
-        problemIds.add(100014);
-        problemIds.add(100015);
-        System.out.println(contestService.insertContestProblem(100004, problemIds));
+    public void getProblemIdsByContestId() throws Exception {
     }
 
     @Test
-    public void deleteUserSolveByContestIdAndProblemIds() throws Exception {
-        Logger.getRootLogger().setLevel(Level.DEBUG);
-        List<Integer> deleted = new ArrayList<>();
-        deleted.add(100002);
+    public void getProblemsByContestId() throws Exception {
     }
+
+    @Test
+    public void updateContestProblem() throws Exception {
+    }
+
+    @Resource
+    private ContestService contestService = null;
+
+    @Before
+    public void setUp() throws Exception {
+        Logger.getRootLogger().setLevel(Level.DEBUG);
+    }
+
+
 }

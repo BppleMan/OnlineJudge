@@ -37,7 +37,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="login-form-row submit-button-row">
+                <div class="login-form-row center-row">
                     <button type="button" id="submit_button" class="btn btn-embossed btn-primary" onclick="login('${basePath}')">
                         登录
                     </button>

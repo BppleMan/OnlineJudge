@@ -4,26 +4,26 @@ package com.bppleman.entity;
  * Created by BppleMan on 2017/11/21.
  */
 public class Data {
-    private int id;
-    private int problemId;
+    private Integer id;
+    private Integer problemId;
     private String input;
     private String answer;
     private String shellName;
     private String shellValue;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getProblemId() {
+    public Integer getProblemId() {
         return problemId;
     }
 
-    public void setProblemId(int problemId) {
+    public void setProblemId(Integer problemId) {
         this.problemId = problemId;
     }
 

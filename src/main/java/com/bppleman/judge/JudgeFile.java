@@ -30,7 +30,7 @@ public class JudgeFile {
         this.status = status;
         this.dataService = dataService;
         problemPath = rootPath + "/" + status.getIdParam().getProblemId();
-        userPath = problemPath + "/" + status.getIdParam().getProblemId();
+        userPath = problemPath + "/" + status.getIdParam().getUserId();
         resourcePath = userPath + "/resource";
         if (status.getCode().getLanguage().toLowerCase().equals("java")) {
             codeFilePath = resourcePath + "/Main." + status.getCode().getLanguage().toLowerCase();
@@ -41,23 +41,25 @@ public class JudgeFile {
         answerFilePath = resourcePath + "/answer";
     }
 
-    public void makeDirector() {
+    public boolean makeDirector() {
+        boolean result = false;
         File problemDir = new File(problemPath);
         if (!problemDir.exists()) {
-            problemDir.mkdir();
+            result = problemDir.mkdir();
         }
         File userDir = new File(userPath);
         if (!userDir.exists()) {
-            userDir.mkdir();
+            result = userDir.mkdir();
         }
         File resourceDir = new File(resourcePath);
         if (!resourceDir.exists()) {
-            resourceDir.mkdir();
+            result = resourceDir.mkdir();
         }
-        resourceDir.mkdir();
+        return result;
     }
 
     public boolean codeToFile() {
+        boolean result = false;
         File codeFile = new File(codeFilePath);
         File inputFile = new File(inputFilePath);
         File answerFile = new File(answerFilePath);
@@ -66,6 +68,10 @@ public class JudgeFile {
         try {
             Data data = dataService.getDataByProblemIDAndShellName(status.getIdParam().getProblemId(),
                     status.getCode().getLanguage().toLowerCase() + ".sh");
+            if (data == null) {
+                result = false;
+                return result;
+            }
             shellFilePath = resourcePath + "/" + data.getShellName();
             shellFile = new File(shellFilePath);
             bw = new BufferedWriter(new FileWriter(codeFile));
@@ -84,6 +90,7 @@ public class JudgeFile {
             bw.write(data.getShellValue());
             bw.flush();
             bw.close();
+            result = true;
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -95,7 +102,7 @@ public class JudgeFile {
                 }
             }
         }
-        return true;
+        return result;
     }
 
     public String getResourcePath() {
@@ -122,7 +129,7 @@ public class JudgeFile {
             return;
         }
         File[] files = path.listFiles();
-        for (int i = 0; i < files.length; i++) {
+        for (Integer i = 0; i < files.length; i++) {
             deleteAllFilesOfDir(files[i]);
         }
         path.delete();

@@ -4,111 +4,132 @@
 
 <mapper namespace="com.bppleman.dao.ContestDao">
     <resultMap type="Contest" id="contestResultMap">
-        <id property="id" column="id" javaType="int"></id>
-        <result property="name" column="name" javaType="string"></result>
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
         <result property="startTime" column="start_time" javaType="java.sql.Timestamp"></result>
         <result property="endTime" column="end_time" javaType="java.sql.Timestamp"></result>
-        <result property="duration" column="duration" javaType="int"></result>
-        <result property="status" column="status" javaType="string"></result>
-        <result property="type" column="type" javaType="string"></result>
-        <result property="author" column="author" javaType="string"></result>
-        <result property="password" column="password" javaType="string"></result>
-        <result property="note" column="note" javaType="string"></result>
-        <collection property="problems" column="id" select="getProblemsByContestID"></collection>
+        <result property="duration" column="duration" javaType="Long"></result>
+        <result property="status" column="status"></result>
+        <result property="type" column="type"></result>
+        <result property="username" column="username"></result>
+        <result property="userId" column="user_id"></result>
+        <result property="password" column="password"></result>
+        <result property="note" column="note"></result>
+        <collection property="problemIds" column="id" select="getProblemIdsByContestId"></collection>
     </resultMap>
 
     <select id="getAllContests" resultMap="contestResultMap" resultType="Contest">
-        SELECT * FROM t_contest
+        SELECT * FROM contest
         ORDER BY start_time DESC
     </select>
 
-    <select id="getContestsByNote" resultMap="contestResultMap" resultType="Contest">
-        SELECT * FROM t_contest
-        WHERE note=#{note}
-    </select>
-    
-    <select id="getContestsByAuthor" resultMap="contestResultMap" resultType="Contest">
-        SELECT * FROM t_contest
-        WHERE author=#{author}
+    <select id="getContestsByParamWithPage" resultMap="contestResultMap" resultType="Contest">
+        SELECT * FROM
+        (
+        SELECT * FROM contest
+        <if test="param1 != null and !&quot;&quot;.equals(param1.trim())">
+          WHERE ${param1} = #{param2}
+        </if>
         ORDER BY start_time DESC
+        ) contest_param1
+        WHERE  id >=
+        (
+        SELECT id FROM (
+        SELECT * FROM contest
+        <if test="param1 != null and !&quot;&quot;.equals(param1.trim())">
+            WHERE ${param1} = #{param2}
+        </if>
+        ORDER BY start_time DESC
+        ) contest_param2
+        ORDER BY id LIMIT #{param3}, 1
+        )
+        <if test="param4 != null">
+            LIMIT #{param4}
+        </if>
     </select>
 
-    <select id="getContestsByType" resultMap="contestResultMap" resultType="Contest">
-        SELECT * FROM t_contest
-        WHERE type=#{type}
+    <select id="getContestByNameWithPage" resultMap="contestResultMap" resultType="Contest">
+        SELECT * FROM
+        (
+        SELECT * FROM contest
+        WHERE name LIKE CONCAT(CONCAT("%",#{param1}),"%")
         ORDER BY start_time DESC
-    </select>
-
-    <select id="getContestsByStatus" resultMap="contestResultMap" resultType="Contest">
-        SELECT * FROM t_contest
-        WHERE status=#{status}
+        ) contest_name1
+        WHERE  id >=
+        (
+        SELECT id FROM (
+        SELECT * FROM contest
+        WHERE name LIKE CONCAT(CONCAT("%",#{param1}),"%")
         ORDER BY start_time DESC
-    </select>
-
-    <select id="getContestByName" resultMap="contestResultMap" resultType="Contest">
-        SELECT * FROM t_contest
-        WHERE name=#{name}
+        ) contest_name2
+        ORDER BY id LIMIT #{param2}, 1
+        )
+        <if test="param3 != null">
+            LIMIT #{param3}
+        </if>
     </select>
 
     <select id="getContestById" resultMap="contestResultMap" resultType="Contest">
-        SELECT * FROM t_contest
-        WHERE id=#{id}
+        SELECT * FROM contest
+        WHERE id = #{param1}
     </select>
 
-    <select id="getProblemsByKeyWord" resultMap="contestResultMap" resultType="Contest">
-        SELECT * FROM t_contest
-        WHERE name
-        LIKE '%${_parameter}%'
+    <select id="getProblemsByContestId" resultMap="com.bppleman.dao.ProblemDao.problemResultMap">
+        SELECT p.* FROM problem p,(
+        SELECT * FROM
+        (
+        SELECT * FROM contest_problem
+        WHERE contest_id = #{param1}
+        ) problem1
+        WHERE  id >=
+        (
+        SELECT id FROM (
+        SELECT * FROM contest_problem
+        WHERE contest_id = #{param1}
+        ) problem2
+        ORDER BY id LIMIT #{param2}, 1
+        )
+        <if test="param3 != null">
+          LIMIT #{param3}
+        </if>
+        ) rcp
+        WHERE p.id = rcp.problem_id
     </select>
 
-    <select id="getProblemsByContestID" resultMap="com.bppleman.dao.ProblemDao.problemResultMap" resultType="Problem">
-        SELECT p.* FROM t_contest_problem c, t_problem p
-        WHERE c.problem_id=p.id
-        AND c.contest_id=#{id}
-    </select>
-
-    <select id="getProblemsByLabel" resultMap="com.bppleman.dao.ProblemDao.problemResultMap" resultType="Problem">
-        SELECT p.id,p.title FROM t_problem p, t_problem_label pl
-        WHERE p.id=pl.problem_id
-        AND pl.label=#{label}
-        ORDER BY p.id
+    <select id="getProblemIdsByContestId" resultType="integer">
+        SELECT problem_id FROM contest_problem
+        WHERE contest_id = #{param1}
     </select>
 
     <insert id="insertContest" parameterType="Contest" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO t_contest<trim prefix="(" suffix=")" suffixOverrides="," >
-        <if test="name != null" >name,</if>
-        <if test="startTime != null" >start_time,</if>
-        <if test="endTime != null" >end_time,</if>
-        <if test="duration != null" >duration,</if>
-        <if test="status != null" >status,</if>
-        <if test="type != null" >type,</if>
-        <if test="author != null" >author,</if>
-        <if test="password != null" >password,</if>
-        <if test="note != null" >note</if>
-    </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="name != null" >#{name},</if>
-            <if test="startTime != null" >#{startTime},</if>
-            <if test="endTime != null" >#{endTime},</if>
-            <if test="duration != null" >#{duration},</if>
-            <if test="status != null" >#{status},</if>
-            <if test="type != null" >#{type},</if>
-            <if test="author != null" >#{author},</if>
-            <if test="password != null" >#{password},</if>
-            <if test="note != null" >#{note}</if>
-        </trim>
-    </insert>
-
-    <insert id="insertContestProblem">
-        INSERT INTO t_contest_problem (contest_id, problem_id)
+        INSERT INTO contest
+        (name, start_time, end_time, duration, status,
+         type, username, user_id, password, note)
         VALUES
-        <foreach collection="param2" item="problemId" separator=",">
-            (#{param1}, #{problemId})
-        </foreach>
+        (#{name}, #{startTime}, #{endTime}, #{duration}, #{status},
+        #{type}, #{username}, #{userId}, #{password}, #{note})
     </insert>
 
-    <delete id="deleteContestProblem">
-        DELETE FROM t_contest_problem
-        WHERE contest_id = #{contestId}
+    <update id="updateContest" parameterType="Contest" keyProperty="id">
+        UPDATE contest SET
+        name = #{name},
+        start_time = #{startTime},
+        end_time = #{endTime},
+        duration = #{duration},
+        status = #{status},
+        type = #{type},
+        password = #{password}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insertProblemToContest">
+        INSERT INTO contest_problem (contest_id, problem_id)
+        VALUES (#{param1}, #{param2})
+    </insert>
+
+    <delete id="deleteProblemFromContest">
+        DELETE FROM contest_problem
+        WHERE contest_id = #{param1}
+        AND problem_id = #{param2}
     </delete>
 </mapper>

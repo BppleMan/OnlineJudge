@@ -8,44 +8,36 @@
         <result property="submitTime" column="submit_time"></result>
         <result property="acTime" column="ac_time"></result>
         <result property="ratioValue" column="ratio_value"></result>
-        <association property="idParam" resultMap="com.bppleman.dao.IDParamDao.idParamResultMap"></association>
+        <result property="problemId" column="problem_id"></result>
+        <!--<association property=" resultMap="com.bppleman.dao.IDParamDao.esultMap"></association>-->
     </resultMap>
 
     <select id="getProblemRatio" resultMap="problemRatioResultMap">
-        SELECT * FROM t_problem_ratio
-        WHERE contest_id = #{contestId}
-        AND exam_id = #{examId}
-        <if test="problemId != -1">AND problem_id = #{problemId}</if>
+        SELECT * FROM problem_ratio
+    </select>
+
+    <select id="getProblemRatioByProblemId" resultMap="problemRatioResultMap">
+        SELECT * FROM problem_ratio
+        WHERE problem_id = #{problemId}
     </select>
 
     <insert id="insertProblemRatio" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO t_problem_ratio
-        (problem_id, contest_id, exam_id, submit_time, ac_time, ratio_value)
+        INSERT INTO problem_ratio
+        (problem_id, submit_time, ac_time, ratio_value)
         VALUES
-        (#{idParam.problemId}, #{idParam.contestId}, ${idParam.examId}, #{submitTime}, #{acTime}, #{ratioValue})
-        ON DUPLICATE KEY UPDATE
-        submit_time = #{submitTime}, ac_time = ${acTime}, ratio_value = #{ratioValue};
+        (#{problemId}, #{submitTime}, #{acTime}, #{ratioValue})
     </insert>
 
     <update id="updateProblemRatio">
-        UPDATE t_problem_ratio
+        UPDATE problem_ratio
         SET submit_time = #{submitTime},
         ac_time = #{acTime},
         ratio_value = #{ratioValue}
-        WHERE problem_id = #{idParam.problemId}
-        AND contest_id = #{idParam.contestId}
-        AND exam_id = #{idParam.examId}
+        WHERE problem_id = #{problemId}
     </update>
 
     <delete id="deleteProblemRatio">
-        DELETE FROM t_problem_ratio
-        WHERE
-        <foreach collection="list" item="idParam" separator="OR">
-            (
-            contest_id = #{idParam.contestId}
-            AND exam_id = #{idParam.examId}
-            <if test="idParam.problemId != -1">AND problem_id = #{idParam.problemId}</if>
-            )
-        </foreach>
+        DELETE FROM problem_ratio
+        WHERE problem_id = #{problemId}
     </delete>
 </mapper>

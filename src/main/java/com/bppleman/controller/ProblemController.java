@@ -1,12 +1,12 @@
 package com.bppleman.controller;
 
-import com.bppleman.affair.submit.CodeAffair;
 import com.bppleman.entity.*;
 import com.bppleman.judge.JudgeThreadProxy;
 import com.bppleman.service.*;
 import com.bppleman.tool.TokenTool;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -37,30 +37,26 @@ public class ProblemController {
         public static final String AUTHOR = "author";
     }
 
+    @Resource
+    private ProblemService problemService;
 
     @Resource
-    private ProblemService problemService = null;
+    private StatusService statusService;
 
     @Resource
-    private StatusService statusService = null;
+    private CodeService codeService;
 
     @Resource
-    private CodeService codeService = null;
+    private ProblemUserSolveService problemUserSolveService;
 
     @Resource
-    private UserSolveService userSolveService = null;
+    private ProblemRatioService problemRatioService;
 
     @Resource
-    private ProblemRatioService problemRatioService = null;
+    private LabelService labelService;
 
     @Resource
-    private TableCountService tableCountService = null;
-
-    @Resource
-    private JudgeThreadProxy judgeThreadProxy = null;
-
-    @Resource
-    private CodeAffair codeAffair = null;
+    private JudgeThreadProxy judgeThreadProxy;
 
     public ProblemController() {
         typeMap = new HashMap<>();
@@ -75,42 +71,33 @@ public class ProblemController {
                                             @RequestParam(value = "kw", required = false) String keyWord,
                                             @RequestParam(value = "page", required = true) Integer pageNumber,
                                             HttpServletRequest request, HttpSession session) {
-        if ((type != null && !"".equals(type.trim())) && (keyWord != null && !"".equals(type.trim()))) {
-            request.setAttribute("search", true);
-            request.setAttribute("type", type);
-            request.setAttribute("keyWord", keyWord);
-        }
         request.setAttribute("typeMap", typeMap);
-        int countPerPage = 50;
+        Integer countPerPage = 50;
         List<Problem> problems = problemService.getProblemsWithPage(type, keyWord, pageNumber, countPerPage);
         request.setAttribute("problems", problems);
-        int tableCount = problemService.getCount(type, keyWord);
-        int pageCount = (int) Math.ceil((double) tableCount / (double) countPerPage);
-        request.setAttribute("pageCount",pageCount);
-        request.setAttribute("pageNumber", pageNumber);
+//        这里用于设置关于分页的参数
+        setPagination(type, keyWord, countPerPage, pageNumber, request);
         User user = (User) session.getAttribute("user");
         if (user != null) {
-            IDParam userSolveParam = new IDParam(user.getId(), null, null, null);
-            Map<Integer, String> userSolveMap = userSolveService.getUserSolveMap(userSolveParam);
+            Map<Integer, String> userSolveMap = problemUserSolveService.getUserSolveMap(user.getId());
             request.setAttribute("userSolveMap", userSolveMap);
         }
-        IDParam problemRatioParam = new IDParam(null, null, null, null);
-        Map<Integer, ProblemRatio> problemRatioMap = problemRatioService.getProblemRatioMap(problemRatioParam);
-        request.setAttribute("problemRatioMap", problemRatioMap);
+        List<Label> labels = labelService.getLabels();
+        request.setAttribute("labels", labels);
         return prefix + listProblem;
     }
 
     @RequestMapping("/show_problem")
-    public String showProblem(int problemId, HttpServletRequest request) {
-        Problem problem = problemService.getProblemByID(problemId);
+    public String showProblem(Integer problemId, HttpServletRequest request) {
+        Problem problem = problemService.getProblemByProblemId(problemId);
         request.setAttribute("problem", problem);
-        request.setAttribute("codePath", "/problem/show_problem/code_problem");
+        request.setAttribute("codeProblemPath", "/problem/show_problem/code_problem");
         request.setAttribute("statusPath", "/list_status/with_problem/1");
         return prefix + showProblem;
     }
 
     @RequestMapping("/show_problem/code_problem")
-    public String codeProblem(int problemId, HttpSession session, HttpServletRequest request) {
+    public String codeProblem(Integer problemId, HttpSession session, HttpServletRequest request) {
         String token = TokenTool.getInstance().makeToken();
         session.setAttribute("code_problem_token", token);
         request.setAttribute("problemId", problemId);
@@ -119,32 +106,32 @@ public class ProblemController {
     }
 
     @RequestMapping("/show_problem/code_problem/submit")
-    public String codeProblemSubmit(Code code, String token, int problemId, HttpSession session, HttpServletRequest request) {
+    public String codeProblemSubmit(Code code, String token, Integer problemId, HttpSession session, RedirectAttributes redirectAttributes) {
         String serverToken = (String) session.getAttribute("code_problem_token");
 //        符合令牌的才可以插入
-        if (serverToken == null || !token.equals(serverToken)) {
-            return "redirect:" + user_problem_status + "?userId=" + code.getIdParam().getUserId() + "&problemId=" + code.getIdParam().getProblemId();
-        }
-        session.removeAttribute("token");
-
         User user = (User) session.getAttribute("user");
         IDParam idParam = new IDParam(user.getId(), problemId, null, null);
-        code.setIdParam(idParam);
-        code.setLength(code.getCodeValue().length());
-        codeService.insertCode(code);
+        if (serverToken != null && token.equals(serverToken)) {
+            session.removeAttribute("token");
+            code.setIdParam(idParam);
+            code.setLength(code.getCodeValue().length());
+            codeService.insertCode(code);
 
-        Status status = new Status();
-        status.setIdParam(idParam);
-        status.setCode(code);
-        status.setStatusValue(Status.Judging);
-        status.setDate(new Timestamp(System.currentTimeMillis()));
-        statusService.insertStatus(status);
+            Status status = new Status();
+            status.setIdParam(idParam);
+            status.setCode(code);
+            status.setStatusValue(Status.Judging);
+            status.setDate(new Timestamp(System.currentTimeMillis()));
+            statusService.insertStatus(status);
 
-        judgeThreadProxy.setDelegate(codeAffair);
-        judgeThreadProxy.setStatus(status);
-        judgeThreadProxy.run();
-
-        return "redirect:/status/list_status/1?userId=" + idParam.getUserId() + "&problemId=" + idParam.getProblemId();
+            judgeThreadProxy.setStatusService(statusService);
+            judgeThreadProxy.setStatus(status);
+            judgeThreadProxy.run();
+        }
+        redirectAttributes.addAttribute("page", 1);
+        redirectAttributes.addAttribute("userId", idParam.getUserId());
+        redirectAttributes.addAttribute("problemId", idParam.getProblemId());
+        return "redirect:/status/list_status";
     }
 
     @RequestMapping("/create_problem")
@@ -155,12 +142,23 @@ public class ProblemController {
     @RequestMapping("/create_problem/submit")
     public String createProblemSubmit(Problem problem) {
         if (problemService.insertProblem(problem)) {
-            IDParam idParam = new IDParam(null, problem.getId(), null, null);
             ProblemRatio problemRatio = new ProblemRatio();
-            problemRatio.setIdParam(idParam);
+            problemRatio.setProblemId(problem.getId());
             problemRatioService.insertProblemRatio(problemRatio);
-            tableCountService.updateTableCount("t_problem", 1, "+");
         }
         return "redirect:" + prefix + listProblem + "/1";
+    }
+
+    private void setPagination(String type, String keyWord, Integer countPerPage, Integer pageNumber,
+                               HttpServletRequest request) {
+        if ((type != null && !"".equals(type.trim())) && (keyWord != null && !"".equals(type.trim()))) {
+            request.setAttribute("search", true);
+            request.setAttribute("type", type);
+            request.setAttribute("keyWord", keyWord);
+        }
+        Integer tableCount = problemService.getCount(type, keyWord);
+        Integer pageCount = (int) Math.ceil((double) tableCount / (double) countPerPage);
+        request.setAttribute("pageCount",pageCount);
+        request.setAttribute("pageNumber", pageNumber);
     }
 }

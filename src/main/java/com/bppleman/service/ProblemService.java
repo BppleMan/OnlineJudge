@@ -13,10 +13,11 @@ import java.util.Map;
 @Repository
 public interface ProblemService {
     List<Problem> getAllProblems();
-    List<Problem> getProblemsWithPage(String type, String keyWord, int page, int length);
-    int getCount(String type, String keyWord);
-    Problem getProblemByID(int problemId);
-    Map<Long, String> getIDTitleMapByIDs(List<Integer> ids);
+    List<Problem> getProblemsWithPage(String type, String keyWord, Integer page, Integer length);
+    Integer getCount(String type, String keyWord);
+    Problem getProblemByProblemId(Integer problemId);
+    Map<Long, String> getProblemIdToTitleMapByProblemIds(List<Integer> ids);
     boolean insertProblem(Problem problem);
-    boolean deleteProblemByID(int problemId);
+    boolean updateProblem(Problem problem);
+    boolean deleteProblemByProblemId(Integer problemId);
 }

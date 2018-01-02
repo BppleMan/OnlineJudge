@@ -1,8 +1,10 @@
 package com.bppleman.service;
 
-import com.bppleman.dao.LabelDao;
 import com.bppleman.entity.Label;
 import com.bppleman.entity.Problem;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,8 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by BppleMan on 2017/11/24.
  */
@@ -24,28 +24,18 @@ import static org.junit.Assert.*;
 @ContextConfiguration(locations = {"classpath:spring-mybatis.xml"})
 
 public class LabelServiceTest {
-
     @Resource
-    private LabelDao labelDao = null;
+    private LabelService labelService = null;
 
-    @Test
-    public void getAllTypes() throws Exception {
+    @Before
+    public void setUp() throws Exception {
+        Logger.getRootLogger().setLevel(Level.DEBUG);
     }
 
     @Test
-    public void getAllLabels() throws Exception {
-    }
-
-    @Test
-    public void getLabelsByType() throws Exception {
-        List<String> types = labelDao.getAllTypes();
-        System.out.println(types);
-        Map<String, List<Label>> labelsMap = new HashMap<>();
-        for (String type : types) {
-            List<Label> labels = labelDao.getLabelsByType(type);
-            labelsMap.put(type, labels);
-        }
-        System.out.println(labelsMap);
+    public void getLabels() throws Exception {
+        List<Label> labels = labelService.getLabels();
+        System.out.println(labels);
     }
 
 }

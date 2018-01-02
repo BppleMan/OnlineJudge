@@ -18,18 +18,12 @@ import java.util.Map;
 @Repository
 public interface ProblemDao extends Serializable{
     List<Problem> getAllProblems();
-    Problem getProblemByID(int id);
-    List<Problem> getProblemsWithPage(int offset, int length);
-    List<Problem> getProblemsByAuthorWithPage(String author, int offset, int length);
-    List<Problem> getProblemsByTitleWithPage(String title, int offset, int length);
-    List<Problem> getProblemsByLabelWithPage(List<String> labels, int offset, int length);
-    Integer getCount();
-    Integer getCountByAuthor(String author);
-    Integer getCountByTitle(String title);
-    Integer getCountByLabel(List<String> labels);
+    Problem getProblemByProblemId(Integer id);
+    List<Problem> getProblemsWithPage(Integer offset, Integer length);
+    List<Problem> getProblemsByAuthorWithPage(String author, Integer offset, Integer length);
+    List<Problem> getProblemsByTitleWithPage(String title, Integer offset, Integer length);
     List<Map<Object, Object>> getProblemTitleByIDs(List<Integer> ids);
-    int insertProblem(Problem problem);
-    int insertProblemLabels(int problemId, List<String> labels);
-    int deleteProblemById(int problemId);
-    int deleteProblemLabelsByProblemId(int problemId);
+    Integer insertProblem(Problem problem);
+    Integer updateProblem(Problem problem);
+    Integer deleteProblemById(Integer problemId);
 }

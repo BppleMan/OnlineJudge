@@ -18,7 +18,7 @@
 <head>
     <jsp:include page="<%=headerPath%>" flush="true" />
     <link href="${basePath}/css/contest/create_contest.css" rel="stylesheet">
-    <link href="${basePath}/lib/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet">
+    <link href="${basePath}/lib/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 </head>
 <body>
 <jsp:include page="<%=navigationBarPath%>" flush="true" />
@@ -59,7 +59,7 @@
                 </label>
             </div>
             <input type="hidden" name="token" value="${create_contest_token}">
-            <div class="submit-button-row">
+            <div class="center-row">
                 <button type="submit" id="submit_button" class="btn btn-embossed btn-primary">
                     <em class="glyphicon glyphicon-pencil"></em>
                     提交
@@ -72,8 +72,8 @@
 
 </script>
 <jsp:include page="<%=footerPath%>" flush="true" />
-<script type="text/javascript" src="${basePath}/lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
-<script src="${basePath}/lib/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script src="${basePath}/lib/bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+<script src="${basePath}/lib/bootstrap-datetimepicker/src/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
 <script src="${basePath}/js/contest/create_contest.js"></script>
 </body>
 </html>

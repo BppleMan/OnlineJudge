@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.ContestProblemRatioDao">
+    <resultMap type="ProblemRatio" id="contestProblemRatioResultMap">
+        <id property="id" column="id" javaType="int"></id>
+        <result property="submitTime" column="submit_time"></result>
+        <result property="acTime" column="ac_time"></result>
+        <result property="ratioValue" column="ratio_value"></result>
+        <result property="problemId" column="problem_id"></result>
+        <result property="contestId" column="contest_id"></result>
+        <!--<association property="idParam" resultMap="com.bppleman.dao.IDParamDao.idParamResultMap"></association>-->
+    </resultMap>
+
+    <select id="getContestProblemRatios" resultMap="contestProblemRatioResultMap">
+        SELECT * FROM contest_problem_ratio
+        WHERE contest_id = #{param1}
+    </select>
+
+    <select id="getContestProblemRatioByProblemId" resultMap="contestProblemRatioResultMap">
+        SELECT * FROM contest_problem_ratio
+        WHERE contest_id = #{param1}
+        AND problem_id = #{param2}
+    </select>
+
+    <insert id="insertContestProblemRatio" keyProperty="id">
+        INSERT INTO contest_problem_ratio
+        (contest_id, problem_id, submit_time, ac_time, ratio_value)
+        VALUES
+        (#{contestId}, #{problemId}, #{submitTime}, #{acTime}, #{ratioValue})
+    </insert>
+
+    <update id="updateContestProblemRatio">
+        UPDATE contest_problem_ratio
+        SET submit_time = #{submitTime},
+        ac_time = #{acTime},
+        ratio_value = #{ratioValue}
+        WHERE problem_id = #{problemId}
+        AND contest_id = #{contestId}
+    </update>
+
+    <delete id="deleteContestProblemRatio">
+        DELETE FROM contest_problem_ratio
+        WHERE contest_id = #{param1}
+        AND problem_id = #{param2}
+    </delete>
+</mapper>

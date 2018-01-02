@@ -14,7 +14,7 @@
 
     <select id="getDataByProblemIDAndShellName" resultMap="dataResultMap" resultType="Data">
         SELECT p.id,p.problem_id, p.input,p.answer,s.shell_name,s.shell_value
-        FROM t_problem_data p,t_shell s
+        FROM problem_data p,shell s
         WHERE p.problem_id = #{arg0}
         AND s.shell_name = #{arg1}
     </select>

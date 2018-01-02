@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.ProblemUserSolveDao">
+    <resultMap type="UserSolve" id="problemUserSolveResultMap">
+        <id property="id" column="id"/>
+        <result property="solveState" column="solve_state"></result>
+        <association property="idParam" resultMap="com.bppleman.dao.IDParamDao.idParamResultMap"></association>
+    </resultMap>
+
+    <select id="getUserSolve" resultMap="problemUserSolveResultMap">
+        SELECT * FROM problem_user_solve
+        WHERE user_id = #{param1}
+    </select>
+
+    <select id="getUserSolveByParam" resultMap="problemUserSolveResultMap">
+        SELECT * FROM problem_user_solve
+        WHERE user_id = #{param1}
+        AND problem_id = #{param2}
+    </select>
+
+    <select id="getUserSubmittedProblemIds" resultType="Integer">
+        SELECT problem_id FROM problem_user_solve
+        WHERE user_id = #{param1}
+    </select>
+
+    <select id="getProblemByUserSolveInfo" resultMap="com.bppleman.dao.ProblemDao.problemResultMap">
+        SELECT p.* FROM problem p , (
+        SELECT problem_id FROM (
+        SELECT * FROM problem_user_solve
+        WHERE solve_state = #{param1}
+        AND user_id = #{param4}
+        ) ${param1}
+        WHERE id >= (
+        SELECT id FROM (
+        SELECT id FROM problem_user_solve
+        WHERE solve_state = #{param1}
+        AND user_id = #{param4}
+        ) ${param1}
+        LIMIT #{param2} , 1
+        )
+        <if test="param3 != null">
+          LIMIT #{param3}
+        </if>
+        ) temp
+        WHERE p.id = temp.problem_id
+    </select>
+
+    <insert id="insertUserSolve" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO problem_user_solve
+        (user_id, problem_id, solve_state)
+        VALUES
+        (#{idParam.userId}, #{idParam.problemId}, #{idParam.solveState})
+    </insert>
+
+    <update id="updateUserSolve">
+        UPDATE problem_user_solve
+        SET solve_state = #{solveState}
+        WHERE user_id = #{idParam.userId}
+        AND problem_id = #{idParam.problemId}
+    </update>
+
+    <delete id="deleteUserSolve">
+        DELETE FROM problem_user_solve
+        WHERE user_id = #{param1}
+        AND problem_id = #{param2}
+    </delete>
+</mapper>

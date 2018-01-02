@@ -14,6 +14,9 @@ import java.util.Map;
 public interface UserService {
     String registerUser(User user);
     User loginUser(User user, StringBuffer loginInfo);
+    User getUserByTelephone(String telephone);
+    User getUserByEmail(String email);
     User getUserByName(String username);
+    boolean updateUser(User user);
     Map<Long, String> getIDUsernameMapByIDs(List<Integer> ids);
 }

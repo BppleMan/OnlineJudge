@@ -10,20 +10,24 @@ import java.util.List;
 /**
  * Created by BppleMan on 2017/11/22.
  */
-@Repository
+//@Repository
 public interface ContestService {
     List<Contest> getAllContests();
-    List<Contest> getContestsByNote(String note);
-    List<Contest> getContestsByAuthor(String author);
-    List<Contest> getContestsByType(String type);
-    List<Contest> getContestsByStatus(String status);
-    List<Contest> getProblemsByKeyWord(String keyword);
-    List<Problem> getProblemsByContestID(int id);
-    List<Problem> getProblemsByLabel(String label);
-    Contest getContestByName(String name);
-    Contest getContestById(int id);
+    List<Contest> getContestsWithPage(String type, String keyWord, Integer page, Integer length);
+    Contest getContestById(Integer contestId);
+
+    /**
+     * 返回符合某条件的查询得到的记录条数
+     * @param type 如果查询contest，那么type需要填写contest表中的某个列名，主要从
+     * @param keyWord
+     * @return
+     */
+    Integer getCount(String type, String keyWord);
     boolean insertContest(Contest contest);
+    boolean updateContest(Contest contest);
+
     boolean canCreateContest(User user);
-    boolean insertContestProblem(int contestId, List<Integer> problemIds);
-    boolean updateContestProblem(int contestId, List<Integer> problemIds);
+    List<Integer> getProblemIdsByContestId(Integer contestId);
+    List<Problem> getProblemsByContestId(Integer contestId, Integer page, Integer length);
+    boolean updateContestProblem(Integer contestId, List<Integer> selectedProblemIds);
 }

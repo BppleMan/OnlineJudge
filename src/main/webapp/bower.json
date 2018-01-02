@@ -1,0 +1,28 @@
+{
+  "name": "OnlineJudge",
+  "homepage": "https://github.com/BppleMan/OnlineJudge",
+  "authors": [
+    "BppleMan <1286363484@qq.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "ace": "^1.2.9",
+    "bootbox.js": "bootbox#^4.4.0",
+    "bootstrap": "^3.3.7",
+    "bootstrap-datetimepicker": "^0.0.11",
+    "flat-ui": "^2.3.0",
+    "font-awesome": "^4.7.0",
+    "amazeui": "^2.7.2",
+    "ace-builds": "^1.2.9"
+  }
+}

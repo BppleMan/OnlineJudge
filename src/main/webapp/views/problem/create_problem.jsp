@@ -66,7 +66,7 @@
                 <span class="help-block">请参照首页中的FAQ进行标签输入，错误的标签将无法添加!</span>
                 <span class="help-block">每个标签以英文半角符逗号或回车隔开</span>
             </div>
-            <div class="submit-button-row">
+            <div class="center-row">
                 <button type="submit" id="submit_button" class="btn btn-embossed btn-primary">
                     <em class="glyphicon glyphicon-pencil"></em>
                     提交
@@ -78,9 +78,9 @@
 <jsp:include page="<%=footerPath%>" flush="true" />
 <script src="${basePath}/js/problem/create_problem.js"></script>
 <script src="${basePath}/js/problem/create_problem_ace_editor.js"></script>
-<script src="${basePath}/lib/ace/src-min-noconflict/ace.js"></script>
-<script src="${basePath}/lib/ace/src-min-noconflict/ext-language_tools.js"></script>
-<script src="${basePath}/lib/ace/src-min-noconflict/ext-old_ie.js"></script>
-<script src="${basePath}/lib/ace/src-min-noconflict/theme-monokai.js"></script>
+<script src="${basePath}/lib/ace-builds/src-min-noconflict/ace.js"></script>
+<script src="${basePath}/lib/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
+<script src="${basePath}/lib/ace-builds/src-min-noconflict/ext-old_ie.js"></script>
+<script src="${basePath}/lib/ace-builds/src-min-noconflict/theme-monokai.js"></script>
 </body>
 </html>

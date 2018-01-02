@@ -8,7 +8,7 @@ import java.util.List;
  * Created by BppleMan on 2017/11/8.
  */
 public class Problem implements Serializable{
-    private int id;
+    private Integer id;
     private String title;
     private String description;
     private String input;
@@ -18,13 +18,14 @@ public class Problem implements Serializable{
     private String hints;
     private String author;
     private Date createTime;
-    private List<String> labels;
+    private ProblemRatio problemRatio;
+    private List<ProblemLabel> problemLabels;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -92,14 +93,6 @@ public class Problem implements Serializable{
         this.author = author;
     }
 
-    public List<String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(List<String> labels) {
-        this.labels = labels;
-    }
-
     public Date getCreateTime() {
         return createTime;
     }
@@ -108,20 +101,77 @@ public class Problem implements Serializable{
         this.createTime = createTime;
     }
 
+    public ProblemRatio getProblemRatio() {
+        return problemRatio;
+    }
+
+    public void setProblemRatio(ProblemRatio problemRatio) {
+        this.problemRatio = problemRatio;
+    }
+
+    public List<ProblemLabel> getProblemLabels() {
+        return problemLabels;
+    }
+
+    public void setProblemLabels(List<ProblemLabel> problemLabels) {
+        this.problemLabels = problemLabels;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Problem problem = (Problem) o;
+
+        if (id != null ? !id.equals(problem.id) : problem.id != null) return false;
+        if (title != null ? !title.equals(problem.title) : problem.title != null) return false;
+        if (description != null ? !description.equals(problem.description) : problem.description != null) return false;
+        if (input != null ? !input.equals(problem.input) : problem.input != null) return false;
+        if (output != null ? !output.equals(problem.output) : problem.output != null) return false;
+        if (sampleInput != null ? !sampleInput.equals(problem.sampleInput) : problem.sampleInput != null) return false;
+        if (sampleOutput != null ? !sampleOutput.equals(problem.sampleOutput) : problem.sampleOutput != null)
+            return false;
+        if (hints != null ? !hints.equals(problem.hints) : problem.hints != null) return false;
+        if (author != null ? !author.equals(problem.author) : problem.author != null) return false;
+        if (createTime != null ? !createTime.equals(problem.createTime) : problem.createTime != null) return false;
+        if (problemRatio != null ? !problemRatio.equals(problem.problemRatio) : problem.problemRatio != null)
+            return false;
+        return problemLabels != null ? problemLabels.equals(problem.problemLabels) : problem.problemLabels == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (input != null ? input.hashCode() : 0);
+        result = 31 * result + (output != null ? output.hashCode() : 0);
+        result = 31 * result + (sampleInput != null ? sampleInput.hashCode() : 0);
+        result = 31 * result + (sampleOutput != null ? sampleOutput.hashCode() : 0);
+        result = 31 * result + (hints != null ? hints.hashCode() : 0);
+        result = 31 * result + (author != null ? author.hashCode() : 0);
+        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
+        result = 31 * result + (problemRatio != null ? problemRatio.hashCode() : 0);
+        result = 31 * result + (problemLabels != null ? problemLabels.hashCode() : 0);
+        return result;
+    }
+
     @Override
     public String toString() {
         return "Problem{" +
                 "id=" + id +
-                ", title='" + title + "\'" +
-                ", description='" + description + "\'" +
-                ", input='" + input + "\'" +
-                ", output='" + output + "\'" +
-                ", sampleInput='" + sampleInput + "\'" +
-                ", sampleOutput='" + sampleOutput + "\'" +
-                ", hints='" + hints + "\'" +
-                ", author='" + author + "\'" +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", input='" + input + '\'' +
+                ", output='" + output + '\'' +
+                ", sampleInput='" + sampleInput + '\'' +
+                ", sampleOutput='" + sampleOutput + '\'' +
+                ", hints='" + hints + '\'' +
+                ", author='" + author + '\'' +
                 ", createTime=" + createTime +
-                ", labels=" + labels +
-                "}\n";
+                ", problemRatio=" + problemRatio +
+                ", problemLabels=" + problemLabels +
+                '}';
     }
 }

@@ -22,44 +22,57 @@
 <body>
 <jsp:include page="<%=navigationBarPath%>" flush="true" />
 <jsp:include page="<%=userModalPath%>" flush="true" />
-<%
-    int pageNumber = (Integer) session.getAttribute("pageNumber");
-    int pageCount = (Integer) session.getAttribute("pageCount");
-%>
+
 <div class="container">
     <div class="jumbotron">
         <h1 class="text-center">${requestScope.h1}</h1>
-        <div class="search-button">
-            <div class="input-group">
-                <input id="keyWord" type="text" class="form-control">
-                <span class="input-group-btn"><button class="btn btn-default" type="button" onclick="search('${basePath}')">Search</button></span>
+        <div class="search-group">
+            <div class="search-keyword">
+                <%--
+                检测type是否是label
+                type为label时设置select
+                否则设置为搜索栏
+                --%>
+                <div class="input-group">
+                    <input name="keyWord" type="text" class="form-control" value="${keyWord}">
+                    <span class="input-group-btn"><button class="btn btn-default" type="button" onclick="searchContest('${note}')">搜索</button></span>
+                </div>
+            </div>
+            <%--search是后台传值，表示当前是否是搜索后得到的页面--%>
+            <input type="hidden" name="type" id="type" value="${type}">
+            <div class="search-type">
+                <div class="btn-group">
+                    <%--这个选择器是用来选择搜索条件--%>
+                    <select placeholder="选择条件">
+                        <option></option>
+                        <c:forEach var="map" items="${typeMap}">
+                            <option value="${map.key}" ${type.equals(map.value)?'selected':''}>${map.value}</option>
+                        </c:forEach>
+                    </select>
+                </div>
             </div>
         </div>
         <hr>
         <div class="pagination-control">
+            <c:set var="path">
+                ${basePath}/contest/list_contest?page=
+            </c:set>
+            <c:set var="searchParam">
+                &tp=${type}&kw=${keyWord}
+            </c:set>
             <ul class="pagination">
                 <li id="page_number_head_pre">
-                    <a href="${basePath}/contest/contest_list/<%=pageNumber == 1 ? pageNumber : pageNumber - 1%>">Prev</a>
+                    <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}${searchParam}">Prev</a>
                 </li>
                 <c:forEach var="item" varStatus="i" begin="1" end="${pageCount}" step="1">
                     <li class="page_number_li">
-                        <a href="${basePath}/contest/contest_list/${i.index}">${i.index}</a>
+                        <a href="${path}${i.index}${searchParam}">${i.index}</a>
                     </li>
                 </c:forEach>
                 <li id="page_number_head_next">
-                    <a href="${basePath}/contest/contest_list/<%=pageNumber == pageCount ? pageCount : pageNumber + 1%>">Next</a>
+                    <a href="${path}${pageNumber == pageCount ? pageCount : pageNumber + 1}${searchParam}">Next</a>
                 </li>
             </ul>
-            <div class="page-button">
-                <div class="input-group">
-                    <input name="pageInputNumber" oninput="inputChange(this, ${pageCount})" type="number" class="form-control" min="1"
-                           max="${pageCount}"/>
-                    <span class="input-group-btn">
-                        <button class="btn btn-default go-button" type="button"
-                                onclick="jumpToPage('${basePath}')">Go!</button>
-                    </span>
-                </div>
-            </div>
         </div>
         <table class="table table-hover table-striped">
             <thead>
@@ -75,30 +88,29 @@
             </tr>
             </thead>
             <tbody id="problems_table_body">
-            <c:forEach var="contest" items="${sessionScope.contests}" varStatus="i" begin="${(pageNumber-1) * countPerPage}"
-                       end="${pageNumber * countPerPage - 1}" step="1">
+            <c:forEach var="contest" items="${contests}" varStatus="i">
                 <tr class="${color[i.index mod 3]}">
                     <td class="text-center">${contest.id}</td>
                     <td class="text-center">
                         <div class="popover-options">
-                            <a onclick="showContest('${basePath}', '${contest.author}', '${contest.type}', ${contest.id}, '${user.username}');">
+                            <a onclick="showContest('${contest.id}');">
                                     ${contest.name}
                             </a>
                         </div>
                     </td>
                     <td class="text-center">${contest.startTime}</td>
                     <td class="text-center">${contest.endTime}</td>
-                    <td class="text-center">${contest.duration}</td>
+                    <td class="text-center">${contest.formatDuration()}</td>
                     <td class="text-center">${contest.status}</td>
                     <td class="text-center">${contest.type}</td>
                     <td class="text-center">
                         <c:choose>
-                            <c:when test="${contest.author == user.username}">
-                                <a href="${basePath}/contest/edit_contest_problem?contestId=${contest.id}">编辑</a>
+                            <c:when test="${contest.username == user.username}">
+                                <a href="${basePath}/contest/edit_contest_problem?contestId=${contest.id}&cpage=1">编辑</a>
                                 <a href="">删除</a>
                             </c:when>
                             <c:otherwise>
-                                ${contest.author}
+                                ${contest.username}
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -109,30 +121,24 @@
         <div class="pagination-control">
             <ul class="pagination">
                 <li id="page_number_foot_pre">
-                    <a href="${basePath}/contest/contest_list/<%=pageNumber == 1 ? pageNumber : pageNumber - 1%>">Prev</a>
+                    <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}${searchParam}">Prev</a>
                 </li>
                 <c:forEach var="item" varStatus="i" begin="1" end="${pageCount}" step="1">
                     <li class="page_number_li">
-                        <a href="${basePath}/contest/contest_list/${i.index}">${i.index}</a>
+                        <a href="${path}${i.index}${searchParam}">${i.index}</a>
                     </li>
                 </c:forEach>
                 <li id="page_number_foot_next">
-                    <a href="${basePath}/contest/contest_list/<%=pageNumber == pageCount ? pageCount : pageNumber + 1%>">Next</a>
+                    <a href="${path}${pageNumber == pageCount ? pageCount : pageNumber + 1}${searchParam}">Next</a>
                 </li>
             </ul>
-            <div class="page-button">
-                <div class="input-group">
-                    <input name="pageInputNumber" type="number" class="form-control" min="1" max="${pageCount}"/>
-                    <span class="input-group-btn">
-                <button class="btn btn-default go-button" type="button"
-                        onclick="jumpToPage('${basePath}')">Go!</button>
-                </span>
-                </div>
-            </div>
         </div>
     </div>
 </div>
-<jsp:include page="<%=footerPath%>" flush="true" />
+<jsp:include page="<%=footerPath%>" flush="true"></jsp:include>
 <script src="${basePath}/js/contest/list_contest.js"></script>
+<script>
+    basePath = "${basePath}";
+</script>
 </body>
 </html>

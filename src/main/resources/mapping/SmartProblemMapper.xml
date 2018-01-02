@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.SmartProblemDao">
+
+    <select id="getProblemsBySmartProblem" resultMap="com.bppleman.dao.ProblemDao.problemResultMap">
+        <![CDATA[
+        SELECT * FROM
+        problem p , problem_label pl , problem_ratio pr
+        WHERE pl.problem_id = p.id
+        AND pr.problem_id = p.id
+        AND pl.label = #{label}
+        AND (pr.ratio_value > #{startLevel} AND pr.ratio_value <= #{endLevel});
+        ]]>
+    </select>
+</mapper>

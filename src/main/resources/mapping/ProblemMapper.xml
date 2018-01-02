@@ -4,118 +4,70 @@
 
 <mapper namespace="com.bppleman.dao.ProblemDao">
     <resultMap type="Problem" id="problemResultMap">
-        <id property="id" column="id"/>
-        <result property="title" column="title" />
-        <result property="description" column="description" />
-        <result property="input" column="input" />
-        <result property="output" column="output" />
-        <result property="sampleInput" column="sampleInput" />
-        <result property="sampleOutput" column="sampleOutput" />
-        <result property="hints" column="hints" />
-        <result property="author" column="author" />
-        <result property="createTime" column="create_time" javaType="java.sql.Timestamp"/>
+        <id property="id" column="id"></id>
+        <result property="title" column="title"></result>
+        <result property="description" column="description"></result>
+        <result property="input" column="input"></result>
+        <result property="output" column="output"></result>
+        <result property="sampleInput" column="sampleInput"></result>
+        <result property="sampleOutput" column="sampleOutput"></result>
+        <result property="hints" column="hints"></result>
+        <result property="author" column="author"></result>
+        <result property="createTime" column="create_time" javaType="java.sql.Timestamp"></result>
+        <association property="problemRatio" column="id" select="com.bppleman.dao.ProblemRatioDao.getProblemRatioByProblemId"></association>
         <!--collection的column需要填写的是：要通过上面的哪个column作为查询的条件-->
         <!--比如这里要通过problem的id查询problem的label，就需要用到上面id这个column-->
-        <collection property="labels" column="id" select="getProblemLabelByID">
-            <result property="label" column="label" javaType="string" jdbcType="VARCHAR"/>
-        </collection>
+        <collection property="problemLabels" column="id" select="com.bppleman.dao.ProblemLabelDao.getProblemLabelByProblemId"></collection>
     </resultMap>
 
     <select id="getAllProblems" resultMap="problemResultMap">
-        SELECT * FROM t_problem
+        SELECT * FROM problem
     </select>
 
     <select id="getProblemsWithPage" resultMap="problemResultMap">
-        SELECT * FROM t_problem
+        SELECT * FROM problem
         WHERE  id >=
         (
-        SELECT id FROM t_problem
+        SELECT id FROM problem
         ORDER BY id LIMIT #{param1}, 1
-        ) LIMIT #{param2};
+        ) LIMIT #{param2}
     </select>
 
-    <select id="getProblemByID" resultMap="problemResultMap">
-        SELECT * FROM t_problem
+    <select id="getProblemByProblemId" resultMap="problemResultMap">
+        SELECT * FROM problem
         WHERE id=#{id}
     </select>
 
     <select id="getProblemsByAuthorWithPage" resultMap="problemResultMap">
-        SELECT * FROM
-        (
-        SELECT * FROM t_problem
+        SELECT * FROM (
+        SELECT * FROM problem
         WHERE author = #{param1}
-        ) t_problem_author
-        WHERE  id >=
-        (
-        SELECT id FROM t_problem
+        ) problem_author1
+        WHERE  id >= (
+        SELECT id FROM (
+        SELECT id FROM problem
+        WHERE author = #{param1}
+        ) problem_author2
         ORDER BY id LIMIT #{param2}, 1
-        ) LIMIT #{param3};
+        ) LIMIT #{param3}
     </select>
 
     <select id="getProblemsByTitleWithPage" resultMap="problemResultMap">
-        SELECT * FROM
-        (
-        SELECT * FROM t_problem
+        SELECT * FROM (
+        SELECT * FROM problem
         WHERE title LIKE CONCAT(CONCAT('%',#{param1}),'%')
-        ) t_problem_title
-        WHERE  id >=
-        (
-        SELECT id FROM t_problem
+        ) problem_title1
+        WHERE  id >= (
+        SELECT id FROM (
+        SELECT id FROM problem
+        WHERE title LIKE CONCAT(CONCAT('%',#{param1}),'%')
+        ) problem_title2
         ORDER BY id LIMIT #{param2}, 1
-        ) LIMIT #{param3};
-    </select>
-
-    <select id="getProblemsByLabelWithPage" resultMap="problemResultMap">
-        SELECT * FROM
-        (
-        SELECT p.*
-        FROM t_problem p , t_problem_label pl
-        WHERE p.id = pl.problem_id
-        AND pl.label IN
-        <foreach collection="param1" item="label" separator="," open="(" close=")">#{label}</foreach>
-        GROUP BY p.id
-        ) t_problem_label
-        WHERE id >=
-        (
-        SELECT p2.id FROM t_problem p2
-        ORDER BY p2.id LIMIT #{param2},1
-        ) LIMIT ${param3};
-    </select>
-
-    <select id="getCount" resultType="Integer">
-        SELECT COUNT(*) FROM t_problem
-    </select>
-
-    <select id="getCountByAuthor" resultType="Integer">
-        SELECT COUNT(*) FROM t_problem
-        WHERE author = #{param1}
-    </select>
-
-    <select id="getCountByTitle" resultType="Integer">
-        SELECT COUNT(*) FROM t_problem
-        WHERE title LIKE CONCAT(CONCAT('%',#{param1}),'%')
-    </select>
-
-    <select id="getCountByLabel" resultType="Integer">
-        SELECT COUNT(*) FROM
-        (
-        SELECT p.id
-        FROM t_problem p , t_problem_label pl
-        WHERE p.id = pl.problem_id
-        AND pl.label IN
-        <foreach collection="list" item="label" separator="," open="(" close=")">#{label}</foreach>
-        GROUP BY p.id
-        ) temp;
-    </select>
-
-    <select id="getProblemLabelByID" parameterType="int" resultType="String">
-        SELECT label
-        FROM t_problem_label
-        WHERE id=#{id}
+        ) LIMIT #{param3}
     </select>
 
     <select id="getProblemTitleByIDs" resultType="map">
-        SELECT id,title FROM t_problem
+        SELECT id,title FROM problem
         WHERE id in
         <foreach collection="list" item="id" open="(" close=")"
                  separator=",">
@@ -124,7 +76,7 @@
     </select>
 
     <insert id="insertProblem" useGeneratedKeys="true" parameterType="Problem" keyProperty="id">
-        INSERT INTO t_problem
+        INSERT INTO problem
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="id != null" >id,</if>
             <if test="title != null" >title,</if>
@@ -146,21 +98,23 @@
             <if test="sampleOutput != null" >#{sampleOutput,jdbcType=VARCHAR},</if>
             <if test="hints != null" >#{hints,jdbcType=VARCHAR},</if>
             <if test="author != null" >#{author,jdbcType=VARCHAR},</if>
-        </trim>;
+        </trim>
     </insert>
 
-    <insert id="insertProblemLabels" parameterType="Problem">
-        INSERT INTO t_problem_label (problem_id,label) VALUES
-        <foreach collection="param2" item="label" index="index" separator=",">
-            (#{param1},#{label})
-        </foreach>
-    </insert>
+    <update id="updateProblem" parameterType="Problem">
+        UPDATE problem SET
+        title = #{title},
+        description = #{description},
+        input = #{input},
+        output = #{output},
+        sampleinput = #{sampleInput},
+        sampleoutput = #{sampleOutput},
+        hints = #{hints},
+        author = #{author}
+        WHERE id = #{id}
+    </update>
 
-    <delete id="deleteProblemById" parameterType="int">
-        DELETE FROM t_problem WHERE id = #{problemId};
-    </delete>
-
-    <delete id="deleteProblemLabelsByProblemId" parameterType="int">
-        DELETE FROM t_problem_label WHERE problem_id = #{problemId};
+    <delete id="deleteProblemById" parameterType="Integer">
+        DELETE FROM problem WHERE id = #{problemId}
     </delete>
 </mapper>

@@ -40,25 +40,36 @@
         <h1 class="text-center">Problems Set</h1>
         <div class="search-group">
             <div class="search-keyword">
+                <%--
+                检测type是否是label
+                type为label时设置select
+                否则设置为搜索栏
+                --%>
                 <c:choose>
                     <c:when test="${type == 'label'}">
-                        <div class="tagsinput-primary">
-                            <input name="keyWord" class="tagsinput" data-role="tagsinput" value="${keyWord}" />
-                        </div>
-                        <span class="help-block">每输入一个标签按下回车键或英文半角符逗号以确定</span>
-                        <div class="input-group">
-                            <button class="btn btn-default" type="button" onclick="searchProblem('${basePath}')">搜索</button>
-                        </div>
+                        <select name="labelTypeSelect" placeholder="选择条件" onchange="listenLabelSelect(this)" class="text-center form-control select select-inverse select-block mbl">
+                            <option></option>
+                            <c:forEach var="labelType" items="${label}">
+                                <option>${labelType}</option>
+                            </c:forEach>
+                        </select>
+                        <select name="labelValueSelect" placeholder="选择题型" onchange="listenLabelSelect(this)" class="text-center form-control select select-inverse select-block mbl">
+                            <option></option>
+                        </select>
+                        <button type="button" class="btn btn-default btn-block" onclick="searchProblem()">搜索</button>
+                        <input name="keyWord" type="hidden" class="form-control" value="${keyWord}">
                     </c:when>
                     <c:otherwise>
                         <div class="input-group">
                             <input name="keyWord" type="text" class="form-control" value="${keyWord}">
-                            <span class="input-group-btn"><button class="btn btn-default" type="button" onclick="searchProblem('${basePath}')">搜索</button></span>
+                            <span class="input-group-btn"><button class="btn btn-default" type="button" onclick="searchProblem()">搜索</button></span>
                         </div>
                     </c:otherwise>
                 </c:choose>
             </div>
+            <%--search是后台传值，表示当前是否是搜索后得到的页面--%>
             <c:choose>
+                <%--当search不为空且search为true时--%>
                 <c:when test="${not empty search and search}">
                     <c:set var="typeValue" value="${type}"></c:set>
                     <c:set var="searchParam">
@@ -69,15 +80,16 @@
                     <c:set var="typeValue" value="title"></c:set>
                 </c:otherwise>
             </c:choose>
-            <input type="hidden" name="" id="" value="${typeValue}">
+            <input type="hidden" name="type" id="type" value="${typeValue}">
             <div class="search-type">
                 <div class="btn-group">
-                    <button id="type-button" data-toggle="dropdown" type="button" class="btn btn-default dropdown-toggle">${typeButtonMap[typeValue]} <span class="caret"></span></button>
-                    <ul class="dropdown-menu" role="menu">
+                    <%--这个选择器是用来选择搜索条件--%>
+                    <select placeholder="选择条件" class="text-center form-control select select-inverse select-block mbl">
+                        <option></option>
                         <c:forEach var="map" items="${typeMap}">
-                            <li><a onclick="selectType('${map.key}', '${map.value}', '${basePath}')">${map.value}</a></li>
+                            <option value="${map.key}" ${typeValue.equals(map.value)?'selected':''} >${map.value}</option>
                         </c:forEach>
-                    </ul>
+                    </select>
                 </div>
             </div>
         </div>
@@ -129,7 +141,9 @@
                             ${problem.author}
                     </td>
                     <td class="text-center">
-                        (${problemRatioMap[problem.id].acTime}/${problemRatioMap[problem.id].submitTime})${problemRatioMap[problem.id].ratioValue}
+                        (<span class="text-success">${problem.problemRatio.acTime}</span>/
+                        <span class="text-danger">${problem.problemRatio.submitTime}</span>)
+                            <span class="text-primary">${problem.problemRatio.ratioValue}%</span>
                     </td>
                     <td class="text-center">
                         <c:if test="${userSolveMap[problem.id].equals('solved')}">
@@ -162,5 +176,15 @@
 </div>
 <jsp:include page="<%=footerPath%>" flush="true" />
 <script src="${basePath}/js/problem/list_problem.js"></script>
+<script>
+    basePath = "${basePath}";
+    labels = {
+    <c:forEach var="label" items="${labels}" varStatus="i">
+    ${label.type}:new Array(
+        <c:forEach var="value" items="${label.values}" varStatus="j">"${value}"<c:if test="${j.index != label.values.size() - 1}">,</c:if></c:forEach>
+    )<c:if test="${i.index != labels.size() - 1}">,</c:if>
+    </c:forEach>
+    }
+</script>
 </body>
 </html>

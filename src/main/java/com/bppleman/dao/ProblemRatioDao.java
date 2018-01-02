@@ -8,8 +8,9 @@ import java.util.List;
 
 @Repository
 public interface ProblemRatioDao {
-    List<ProblemRatio> getProblemRatio(IDParam idParam);
-    int insertProblemRatio(ProblemRatio problemRatio);
-    int updateProblemRatio(ProblemRatio problemRatio);
-    int deleteProblemRatio(List<IDParam> idParams);
+    List<ProblemRatio> getProblemRatio();
+    ProblemRatio getProblemRatioByProblemId(Integer problemId);
+    Integer insertProblemRatio(ProblemRatio problemRatio);
+    Integer updateProblemRatio(ProblemRatio problemRatio);
+    Integer deleteProblemRatio(Integer problemId);
 }

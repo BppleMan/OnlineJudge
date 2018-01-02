@@ -1,10 +1,11 @@
 package com.bppleman.judge;
 
-import com.bppleman.delegate.CodeAffairDelegate;
 import com.bppleman.entity.Status;
 import com.bppleman.service.DataService;
 import com.bppleman.service.StatusService;
 import com.bppleman.service.UserService;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -20,12 +21,9 @@ public class JudgeThreadProxy {
     private DataService dataService = null;
 
     @Resource
-    private StatusService statusService = null;
-
-    @Resource
     private UserService userService = null;
 
-    private CodeAffairDelegate  delegate = null;
+    private StatusService statusService = null;
 
     private Status status;
 
@@ -36,48 +34,58 @@ public class JudgeThreadProxy {
     }
 
     public void run() {
+        Logger logger = Logger.getRootLogger();
+        logger.setLevel(Level.DEBUG);
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
 //                创建评测所需要的目录结构，包括目录和文件
                 JudgeFile judgeFile = new JudgeFile(status, dataService);
 //                创建目录
-                judgeFile.makeDirector();
+                if (judgeFile.makeDirector())
+                    logger.info("->创建目录结构成功");
+                else logger.error("->创建目录结构失败");
 //                创建文件
-                judgeFile.codeToFile();
+                if (judgeFile.codeToFile())
+                    logger.info("->创建代码/脚本文件成功");
+                else logger.error("->创建目录结构失败");
 //                评测机核心部分
                 JudgeCore judgeCore = new JudgeCore();
 //                对shell文件赋予执行权限
                 String command = "chmod u+x " + judgeFile.getShellFilePath();
                 judgeCore.runShell(command);
+                logger.info("->赋予执行权限成功");
 //                运行shell文件
                 command = judgeFile.getShellFilePath() + " " + judgeFile.getResourcePath();
                 judgeCore.runShell(command);
 //                取出编译结果并赋值给status
                 String compileInfo = judgeCore.getCompileInfo();
+                logger.error("编译结果:" + compileInfo);
                 status.setCompileInfo(compileInfo);
-                if (compileInfo == null || compileInfo.equals("") || compileInfo.trim().equals("")) {
+                if (compileInfo == null ||
+                        compileInfo.equals("") ||
+                        compileInfo.trim().equals("") ||
+                        compileInfo.trim().equals(status.getCode().getLanguage()+"ubuntu")) {
 //                比较运行结果并赋值给status
                     String value = judgeCore.compareAnswer(judgeFile.getResourcePath());
                     status.setStatusValue(value);
 //                计算所耗时间
-                    int time = judgeCore.calculatorTime(judgeFile.getResourcePath());
+                    Integer time = judgeCore.calculatorTime(judgeFile.getResourcePath());
                     status.setTime(time);
 //                计算所耗内存
-                    int memory = judgeCore.calculatorMemory(judgeFile.getResourcePath());
+                    Integer memory = judgeCore.calculatorMemory(judgeFile.getResourcePath());
                     status.setMemory(memory);
 
 //                删除临时文件
                     JudgeFile.deleteAllFilesOfDir(new File(judgeFile.getResourcePath()));
+                    logger.info("删除临时文件成功");
                 } else {
                     status.setStatusValue(Status.Compilation_Error);
                 }
-//                更新t_status表
-//                statusService.updateStatus(status);
-                delegate.shouldUpdateStatus(status);
-                delegate.shouldUpdateProblemRatio(status);
-                delegate.shouldUpdateRank(status);
-                delegate.shouldUpdateUserSolve(status);
+//                更新status表
+                statusService.updateStatus(status);
+
+                logger.setLevel(Level.ERROR);
             }
         });
         thread.start();
@@ -97,19 +105,11 @@ public class JudgeThreadProxy {
         this.status = status;
     }
 
-    public DataService getDataService() {
-        return dataService;
+    public StatusService getStatusService() {
+        return statusService;
     }
 
-    public void setDataService(DataService dataService) {
-        this.dataService = dataService;
-    }
-
-    public CodeAffairDelegate getDelegate() {
-        return delegate;
-    }
-
-    public void setDelegate(CodeAffairDelegate delegate) {
-        this.delegate = delegate;
+    public void setStatusService(StatusService statusService) {
+        this.statusService = statusService;
     }
 }

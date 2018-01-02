@@ -1,6 +1,7 @@
 package com.bppleman.dao;
 
 import com.bppleman.entity.Label;
+import com.bppleman.entity.Problem;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.List;
  */
 @Repository
 public interface LabelDao {
-    List<String> getAllTypes();
-    List<Label> getAllLabels();
-    List<Label> getLabelsByType(String type);
+    List<Label> getLabels();
+    List<String> getLabelValues();
 }

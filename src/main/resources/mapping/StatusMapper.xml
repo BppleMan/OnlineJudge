@@ -15,8 +15,8 @@
         <association property="code" column="code_id" select="com.bppleman.dao.CodeDao.getCodeByID"></association>
     </resultMap>
 
-    <select id="getStatus" resultMap="statusResultMap">
-        SELECT * FROM t_status
+    <select id="getStatus" parameterType="IDParam" resultMap="statusResultMap">
+        SELECT * FROM status
         WHERE contest_id = #{contestId}
         AND exam_id = #{examId}
         <if test="userId != -1">AND user_id = #{userId}</if>
@@ -25,7 +25,7 @@
     </select>
 
     <select id="getStatusByIDs" resultMap="statusResultMap">
-        SELECT * FROM t_status
+        SELECT * FROM status
         WHERE id in
         <foreach collection="list" item="id" open="(" close=")"
                  separator=",">
@@ -34,29 +34,33 @@
     </select>
 
     <select id="getTheLastInsertStatus" resultMap="statusResultMap">
-        SELECT * FROM t_status
+        SELECT * FROM status
         ORDER BY id DESC LIMIT 1
     </select>
 
+    <select id="getProblemXXTimesByUserId" resultType="Integer">
+        SELECT COUNT(*) FROM status
+        WHERE contest_id = #{param.contestId}
+        AND exam_id = #{param.examId}
+        AND user_id = #{param.userId}
+        AND problem_id = #{param.problemId}
+        <if test="statueValue != null">
+            AND status_value = #{statueValue}
+        </if>
+    </select>
+
     <insert id="insertStatus" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO t_status(user_id, problem_id, contest_id, exam_id, code_id, status_value, time, memory, date)
+        INSERT INTO status(user_id, problem_id, contest_id, exam_id, code_id, status_value, time, memory, date)
         VALUES (#{idParam.userId}, #{idParam.problemId}, #{idParam.contestId}, #{idParam.examId}, #{codeId}, #{statusValue}, #{time}, #{memory}, #{date})
     </insert>
 
     <update id="updateStatus" parameterType="Status">
-        UPDATE t_status SET
-        <trim>
-            <if test="idParam.userId != -1">user_id = #{idParam.userId},</if>
-            <if test="idParam.problemId != -1">user_id = #{idParam.problemId},</if>
-            <if test="idParam.contestId != -1">user_id = #{idParam.contestId},</if>
-            <if test="idParam.examId != -1">user_id = #{idParam.examId},</if>
-            <if test="codeId != -1" >code_id = #{codeId},</if>
-            <if test="statusValue != null" >status_value = #{statusValue},</if>
-            <if test="time != -1" >time = #{time},</if>
-            <if test="memory != -1" >memory = #{memory},</if>
-            <if test="compileInfo != null" >compile_info = #{compileInfo},</if>
-            <if test="date != null" >date = #{date}</if>
-        </trim>
+        UPDATE status SET
+            status_value = #{statusValue},
+            time = #{time},
+            memory = #{memory},
+            compile_info = #{compileInfo},
+            date = #{date}
         WHERE
         id = #{id}
     </update>

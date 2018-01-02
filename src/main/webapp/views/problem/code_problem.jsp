@@ -40,7 +40,8 @@
             <button type="button"
                     id="submit_button"
                     class="btn btn-default"
-                    onclick="submit_code(${empty user ? false : true},'${basePath}${submitPath}', '${sessionScope.code_problem_token}', ${requestScope.problemId});">
+                    onclick="submit_code(${empty user ? false : true},'${basePath}${submitPath}',
+                            '${code_problem_token}', ${problemId}, ${contestId});">
                 <em class="glyphicon glyphicon-pencil"></em>
                 Submit
             </button>
@@ -54,9 +55,9 @@
 <jsp:include page="<%=footerPath%>" flush="true" />
 <script src="${basePath}/js/problem/code_problem.js"></script>
 <script src="${basePath}/js/problem/ace_editor.js"></script>
-<script src="${basePath}/lib/ace/src-min-noconflict/ace.js"></script>
-<script src="${basePath}/lib/ace/src-min-noconflict/ext-language_tools.js"></script>
-<script src="${basePath}/lib/ace/src-min-noconflict/ext-old_ie.js"></script>
-<script src="${basePath}/lib/ace/src-min-noconflict/theme-monokai.js"></script>
+<script src="${basePath}/lib/ace-builds/src-min-noconflict/ace.js"></script>
+<script src="${basePath}/lib/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
+<script src="${basePath}/lib/ace-builds/src-min-noconflict/ext-old_ie.js"></script>
+<script src="${basePath}/lib/ace-builds/src-min-noconflict/theme-monokai.js"></script>
 </body>
 </html>

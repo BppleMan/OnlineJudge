@@ -21,14 +21,15 @@ public class CodeServiceImpl implements CodeService{
     }
 
     @Override
-    public Code getCodeByID(int id) {
+    public Code getCodeById(Integer id) {
         return codeDao.getCodeByID(id);
     }
 
     @Override
     public boolean insertCode(Code code) {
-        if (codeDao.insertCode(code) == 1)
-            return true;
-        return false;
+        boolean result = true;
+        if (codeDao.insertCode(code) != 1)
+            result = false;
+        return result;
     }
 }
