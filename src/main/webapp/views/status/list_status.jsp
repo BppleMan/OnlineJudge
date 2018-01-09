@@ -114,7 +114,7 @@
                 </li>
             </ul>
             <c:if test="${not empty isContestStatus && isContestStatus == true}">
-                <button class="btn btn-embossed btn-primary" onclick="location.href = '${basePath}/contest/show_contest?page=1&contestId=${idParam.contestId}&note=${contestNote}';">
+                <button class="btn btn-embossed btn-primary" onclick="location.href = '${basePath}/contest/show_contest?page=1&contestId=${idParam.contestId}';">
                     <em class="glyphicon glyphicon-arrow-left"></em>
                     返回竞赛题目
                 </button>

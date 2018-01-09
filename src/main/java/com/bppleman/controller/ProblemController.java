@@ -70,9 +70,11 @@ public class ProblemController {
     public String listProblemWithPageNumber(@RequestParam(value = "tp", required = false) String type,
                                             @RequestParam(value = "kw", required = false) String keyWord,
                                             @RequestParam(value = "page", required = true) Integer pageNumber,
+                                            @RequestParam(value = "cp", required = false) Integer countPerPage,
                                             HttpServletRequest request, HttpSession session) {
         request.setAttribute("typeMap", typeMap);
-        Integer countPerPage = 50;
+        if (countPerPage == null)
+            countPerPage = 50;
         List<Problem> problems = problemService.getProblemsWithPage(type, keyWord, pageNumber, countPerPage);
         request.setAttribute("problems", problems);
 //        这里用于设置关于分页的参数
@@ -132,21 +134,6 @@ public class ProblemController {
         redirectAttributes.addAttribute("userId", idParam.getUserId());
         redirectAttributes.addAttribute("problemId", idParam.getProblemId());
         return "redirect:/status/list_status";
-    }
-
-    @RequestMapping("/create_problem")
-    public String createProblem() {
-        return prefix + createProblem;
-    }
-
-    @RequestMapping("/create_problem/submit")
-    public String createProblemSubmit(Problem problem) {
-        if (problemService.insertProblem(problem)) {
-            ProblemRatio problemRatio = new ProblemRatio();
-            problemRatio.setProblemId(problem.getId());
-            problemRatioService.insertProblemRatio(problemRatio);
-        }
-        return "redirect:" + prefix + listProblem + "/1";
     }
 
     private void setPagination(String type, String keyWord, Integer countPerPage, Integer pageNumber,

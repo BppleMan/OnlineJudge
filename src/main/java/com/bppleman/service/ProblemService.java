@@ -17,7 +17,7 @@ public interface ProblemService {
     Integer getCount(String type, String keyWord);
     Problem getProblemByProblemId(Integer problemId);
     Map<Long, String> getProblemIdToTitleMapByProblemIds(List<Integer> ids);
-    boolean insertProblem(Problem problem);
-    boolean updateProblem(Problem problem);
+    boolean insertProblem(Problem problem, String[] labels);
+    boolean updateProblem(Problem newProblem, String[] labels);
     boolean deleteProblemByProblemId(Integer problemId);
 }

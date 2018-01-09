@@ -19,7 +19,7 @@ import java.io.IOException;
 public class LoginFilter extends OncePerRequestFilter {
 
     @Resource
-    private UserService userService = null;
+    private UserService userService;
 
     public UserService getUserService() {
         return userService;

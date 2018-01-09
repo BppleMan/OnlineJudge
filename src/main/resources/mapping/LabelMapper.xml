@@ -6,21 +6,19 @@
     <resultMap type="Label" id="labelResultMap">
         <id property="id" column="id"></id>
         <result property="type" column="type"></result>
-        <collection property="values" column="type" select="getValueByType"></collection>
+        <collection property="values" column="type" select="getValuesByType"></collection>
     </resultMap>
 
     <select id="getLabels" resultMap="labelResultMap" resultType="Label">
         SELECT type FROM label
         GROUP BY type
     </select>
-    
-    <select id="getLabelValues" resultType="string">
-        SELECT value FROM label
-    </select>
 
-    <select id="getValueByType" resultType="string">
+    <select id="getValuesByType" resultType="string">
         SELECT value FROM label
-        WHERE type=#{param1}
+        <if test="_parameter != null">
+          WHERE type = #{type}
+        </if>
     </select>
 
     <select id="getProblemByValue" resultMap="com.bppleman.dao.ProblemDao.problemResultMap">

@@ -37,29 +37,8 @@
                     </li>
                 </ul>
             </li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="diy_contest_button">考试<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                    <li><a class="" href="">考试列表</a></li>
-                    <li>
-                        <c:choose>
-                            <c:when test="${empty user}">
-                                <a class="" onclick="bootbox.alert('请先登录')">CreateContest</a>
-                            </c:when>
-                            <c:otherwise>
-                                <a class="" onclick="location.href = '';">创建考试</a>
-                            </c:otherwise>
-                        </c:choose>
-                    </li>
-                </ul>
-            </li>
-            <!--exams-->
-            <li><a href="${basePath}/exams">Exam</a></li>
-            <c:if test="${user.type == 'Admin'}">
-                <li><a href="${basePath}/problem/create_problem">创建题目</a></li>
-            </c:if>
+            <li><a href="${basePath}/exam/list_exam?page=1">参加考试</a></li>
         </ul>
-        <!--users-->
 
         <ul class="nav navbar-nav navbar-right">
             <c:if test="${empty sessionScope.user}">

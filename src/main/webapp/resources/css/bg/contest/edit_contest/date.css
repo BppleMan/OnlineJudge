@@ -1,0 +1,32 @@
+label {
+    color: #eee;
+    font-size: 18px;
+}
+
+.col-lg-2 {
+    color: #eee;
+}
+
+.col-lg-2 input {
+    display: inline-block;
+}
+
+.background .content .container {
+    padding: 50px;
+}
+
+.background .content .container .jumbotron {
+    margin: 20px 100px;
+}
+
+.background .content .container .form-horizontal {
+    margin-top: 50px;
+}
+
+.background .content .container .form-horizontal .center-row {
+    margin-top: 50px;
+}
+
+.background .content .container .form-horizontal .center-row button {
+    float: none;
+}

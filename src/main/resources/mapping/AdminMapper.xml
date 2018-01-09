@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.AdminDao">
+    <resultMap id="adminResultMap" type="Admin">
+        <id property="id" column="id"></id>
+        <result property="adminName" column="username"></result>
+        <result property="password" column="password"></result>
+        <result property="teacherCard" column="teacher_card"></result>
+    </resultMap>
+
+    <select id="getAllAdmins" resultMap="adminResultMap">
+        SELECT * FROM admin
+    </select>
+
+    <select id="getAdminByAdminName" resultMap="adminResultMap">
+        SELECT * FROM admin
+        WHERE username = #{param1}
+    </select>
+
+    <insert id="insertAdmin" parameterType="Admin" keyProperty="id">
+        INSERT INTO admin (username, password, teacher_card)
+        VALUES (#{adminName}, #{password}, #{teacherCard})
+    </insert>
+
+    <update id="updateAdmin" parameterType="Admin">
+        UPDATE admin SET
+        username = #{adminName},
+        password = #{password},
+        teacher_card = #{teacherCard}
+        WHERE
+        id = #{id}
+    </update>
+</mapper>

@@ -19,7 +19,7 @@
             <a href="${basePath}/user/information/user_solve_info?rt=1">答题信息</a>
         </li>
         <li>
-            <a href="${basePath}/user/information/contest_info">竞赛信息</a>
+            <a href="${basePath}/user/information/contest_info/list_contest?page=1">竞赛信息</a>
         </li>
         <li>
             <a href="${basePath}/user/information/exam_info">考试信息</a>

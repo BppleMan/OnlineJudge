@@ -3,16 +3,15 @@ package com.bppleman.controller;
 import com.bppleman.entity.*;
 import com.bppleman.enumration.UserChangeInfo;
 import com.bppleman.enumration.UserChangeType;
-import com.bppleman.service.CountService;
-import com.bppleman.service.ProblemUserSolveService;
-import com.bppleman.service.StatusService;
-import com.bppleman.service.UserService;
+import com.bppleman.service.*;
 import com.bppleman.tool.CookieTool;
 import com.bppleman.tool.TokenTool;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
@@ -70,7 +69,7 @@ public class UserController {
     @RequestMapping("/logout")
     @ResponseBody
     public String logout(HttpServletRequest request, HttpSession session, HttpServletResponse response) {
-        CookieTool.removeCookie(request, response);
+        CookieTool.removeCookie("username", request, response);
         session.removeAttribute("user");
         return "logout_success";
     }
@@ -118,13 +117,12 @@ public class UserController {
      * 账号信息
      ******************************************/
 
-    private String infoPrefix = "/user/information";
-    private String mainInfo = "/main_info";
+    private String mainInfo = "/information/main_info";
 
     @RequestMapping("/information/main_info")
     public String mainInfo(HttpServletRequest request, HttpSession session) {
         request.setAttribute("lastPath", "main_info");
-        return infoPrefix + mainInfo;
+        return prefix + mainInfo;
     }
 
     @RequestMapping("/information/change_info")
@@ -197,7 +195,7 @@ public class UserController {
     @Resource
     private StatusService statusService;
 
-    private static final String userSolveInfo = "/user_solve_info";
+    private static final String userSolveInfo = "/information/user_solve_info";
 
     @RequestMapping("/information/user_solve_info")
     public String userSolveInfo(@RequestParam(value = "page", required = false) Integer pageNumber,
@@ -239,18 +237,98 @@ public class UserController {
         request.setAttribute("userSolveTotalPageMap", userSolveTotalPageMap);
         request.setAttribute("problemSubmittedTimesMap", problemSubmittedTimesMap);
         request.setAttribute("problemACTimesMap", problemACTimesMap);
-        return infoPrefix + userSolveInfo;
+        return prefix + userSolveInfo;
     }
 
     /******************************************
      * 竞赛信息
      ******************************************/
 
-    @RequestMapping("/information/contest_info")
-    public String contestInfo(HttpServletRequest request) {
+    private String listContest = "/information/contest_info/list_contest";
 
+    @Resource
+    private ContestController contestController;
+
+    @RequestMapping("/information/contest_info/list_contest")
+    public String listContest(@RequestParam(value = "page", required = false) Integer pageNumber,
+                              HttpServletRequest request, HttpSession session) {
+        if (pageNumber == null)
+            pageNumber = 1;
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            contestController.listContestWithPageNumber(ContestController.Type.USERNAME, user.getUsername(), pageNumber, 5, request);
+            Integer pageCount = (Integer) request.getAttribute("pageCount");
+            Integer begin = 1, end = 1;
+            if (pageCount > 10) {
+                for (int i = 0; i < Math.ceil((double) pageCount / 10); i++) {
+                    if (pageNumber > i * 10 && pageNumber <= (i + 1) * 10) {
+                        begin = i * 10 + 1;
+                        end = (i + 1) * 10;
+                    }
+                }
+                if (end > pageCount)
+                    end = pageCount;
+            } else {
+                begin = 1;
+                end = pageCount;
+            }
+            request.setAttribute("begin", begin);
+            request.setAttribute("end", end);
+        }
         request.setAttribute("lastPath", "contest_info");
-        return infoPrefix + mainInfo;
+        return prefix + listContest;
+    }
+
+    @Resource
+    private ContestService contestService;
+
+    private String editDate = "/information/contest_info/edit_contest_date";
+    private String editContent = "/information/contest_info/edit_contest_content";
+
+    @RequestMapping("/information/contest_info/edit_contest_{option}")
+    public String editContest(@PathVariable("option") String editOption, Integer contestId,
+                              HttpServletRequest request, HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+        Contest contest = contestService.getContestById(contestId);
+        if (contest != null) {
+            if (editOption.equals("date")) {
+                request.setAttribute("contest", contest);
+                Map<String, String> typesMap = new HashMap<>();
+                typesMap.put(Contest.Type.PASSWORD, "需要密码");
+                typesMap.put(Contest.Type.PUBLIC, "公开");
+                typesMap.put(Contest.Type.CLASS, "只允许本班学生");
+                request.setAttribute("typesMap", typesMap);
+                return prefix + editDate;
+            } else if (editOption.equals("content")) {
+
+            } else if (editOption.equals("delete")) {
+
+            }
+        }
+        redirectAttributes.addAttribute("page", 1);
+        return "redirect:" + prefix + listContest;
+    }
+
+    @RequestMapping("/information/contest_info/edit_contest_{option}/submit")
+    public String editContestSubmit(Contest contest, Integer contestId,
+                                    @PathVariable("option") String editOption,
+                                    @RequestParam(required = false) Boolean isContinue,
+                                    HttpServletRequest request, HttpSession session,
+                                    RedirectAttributes redirectAttributes) {
+        if (editOption.equals("date")) {
+            contestService.updateContest(contest, contestId);
+            if (isContinue != null && isContinue) {
+                redirectAttributes.addAttribute("contestId", contestId);
+                redirectAttributes.addAttribute("cpage", 1);
+                return "redirect:/contest/edit_contest_problem";
+            }
+        } else if (editOption.equals("content")) {
+
+        } else if (editOption.equals("delete")) {
+
+        }
+        redirectAttributes.addAttribute("page", 1);
+        return "redirect:" + prefix + listContest;
     }
 
 
@@ -262,6 +340,6 @@ public class UserController {
     public String examInfo(HttpServletRequest request) {
 
         request.setAttribute("lastPath", "exam_info");
-        return infoPrefix + mainInfo;
+        return prefix + mainInfo;
     }
 }

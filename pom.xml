@@ -40,6 +40,23 @@
       <artifactId>spring-webmvc</artifactId>
       <version>4.3.12.RELEASE</version>
     </dependency>
+
+
+    <!-- AspectJ -->
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-aop -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+      <version>4.3.12.RELEASE</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>1.8.13</version>
+    </dependency>
+
+
     <!-- https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp -->
     <dependency>
       <groupId>commons-dbcp</groupId>

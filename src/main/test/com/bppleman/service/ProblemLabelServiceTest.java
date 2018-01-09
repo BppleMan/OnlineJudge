@@ -14,10 +14,7 @@ import javax.annotation.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:spring-mybatis.xml")
@@ -40,7 +37,7 @@ public class ProblemLabelServiceTest {
 
     @Test
     public void initProblemLabel() throws Exception {
-        List<String> labelValues = labelService.getLabelValues();
+        List<String> labelValues = labelService.getValuesByType(null);
         Random random = new Random();
         List<Problem> problems = problemService.getAllProblems();
         for (Problem problem : problems) {
@@ -63,7 +60,7 @@ public class ProblemLabelServiceTest {
                 problemLabels.add(problemLabel);
             }
             problem.setProblemLabels(problemLabels);
-            problemService.updateProblem(problem);
+//            problemService.updateProblem(problem);
         }
     }
 

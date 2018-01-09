@@ -34,12 +34,11 @@ public class TokenTool {
      */
     public String makeToken(){  //checkException
         //  7346734837483  834u938493493849384  43434384
-        String token = (System.currentTimeMillis() + new Random().nextInt(999999999)) + "";
+        String token = String.valueOf(System.currentTimeMillis() + "|" + new Random().nextLong());
         //数据指纹   128位长   16个字节  md5
         try {
             MessageDigest md = MessageDigest.getInstance("md5");
             byte md5[] =  md.digest(token.getBytes());
-            //base64编码--任意二进制编码明文字符
             byte[] encodeBase64 = Base64.encodeBase64(md5);
             return new String(encodeBase64);
         } catch (NoSuchAlgorithmException e) {

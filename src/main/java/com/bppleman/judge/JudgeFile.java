@@ -1,8 +1,8 @@
 package com.bppleman.judge;
 
-import com.bppleman.entity.Data;
+import com.bppleman.entity.ProblemData;
 import com.bppleman.entity.Status;
-import com.bppleman.service.DataService;
+import com.bppleman.service.ProblemDataService;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,11 +24,11 @@ public class JudgeFile {
     private String answerFilePath = null;
     private String shellFilePath = null;
 
-    private DataService dataService = null;
+    private ProblemDataService problemDataService = null;
 
-    public JudgeFile(Status status, DataService dataService) {
+    public JudgeFile(Status status, ProblemDataService problemDataService) {
         this.status = status;
-        this.dataService = dataService;
+        this.problemDataService = problemDataService;
         problemPath = rootPath + "/" + status.getIdParam().getProblemId();
         userPath = problemPath + "/" + status.getIdParam().getUserId();
         resourcePath = userPath + "/resource";
@@ -66,28 +66,28 @@ public class JudgeFile {
         File shellFile = null;
         BufferedWriter bw = null;
         try {
-            Data data = dataService.getDataByProblemIDAndShellName(status.getIdParam().getProblemId(),
+            ProblemData problemData = problemDataService.getProblemDataByProblemIdAndShellName(status.getIdParam().getProblemId(),
                     status.getCode().getLanguage().toLowerCase() + ".sh");
-            if (data == null) {
+            if (problemData == null) {
                 result = false;
                 return result;
             }
-            shellFilePath = resourcePath + "/" + data.getShellName();
+            shellFilePath = resourcePath + "/" + problemData.getShellName();
             shellFile = new File(shellFilePath);
             bw = new BufferedWriter(new FileWriter(codeFile));
             bw.write(status.getCode().getCodeValue());
             bw.flush();
             bw.close();
             bw = new BufferedWriter(new FileWriter(inputFile));
-            bw.write(data.getInput());
+            bw.write(problemData.getInputData());
             bw.flush();
             bw.close();
             bw = new BufferedWriter(new FileWriter(answerFile));
-            bw.write(data.getAnswer());
+            bw.write(problemData.getOutputData());
             bw.flush();
             bw.close();
             bw = new BufferedWriter(new FileWriter(shellFile));
-            bw.write(data.getShellValue());
+            bw.write(problemData.getShellValue());
             bw.flush();
             bw.close();
             result = true;

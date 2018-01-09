@@ -21,6 +21,7 @@
 <head>
     <link href="${basePath}/lib/amazeui/dist/css/amazeui.css" rel="stylesheet">
     <jsp:include page="<%=headerPath%>" flush="true"/>
+    <link href="${basePath}/lib/sidebar/css/style.css" rel="stylesheet">
     <link href="${basePath}/css/contest/edit_contest_problem.css" rel="stylesheet">
 </head>
 <body>
@@ -119,22 +120,32 @@
                                                         </c:forEach>
                                                         </tbody>
                                                     </table>
-                                                    <c:set var="path">
-                                                        ${basePath}/contest/edit_contest_problem?contestId=${contest.id}&rt=${requestTime}&lt=${label.type}&lv=${value}&cpage=
-                                                    </c:set>
+                                                    <c:set var="pagePath">${basePath}/contest/edit_contest_problem?contestId=${contest.id}&rt=${requestTime}&lt=${label.type}&lv=${value}&cpage=</c:set>
+                                                    <c:set var="begin" value="${labelPageCountBeginEndMap.get(value).get('begin')}"></c:set>
+                                                    <c:set var="end" value="${labelPageCountBeginEndMap.get(value).get('end')}"></c:set>
                                                     <c:set var="pageNumber" value="${labelCurrentPage[value]}"></c:set>
                                                     <div class="center-row">
                                                         <ul class="pagination">
                                                             <li>
-                                                                <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}">Prev</a>
+                                                                <a href="${pagePath}${pageNumber == 1 ? pageNumber : pageNumber - 1}">上一页</a>
                                                             </li>
-                                                            <c:forEach var="item" varStatus="k" begin="1" end="${labelPageCountMap[value]}" step="1">
+                                                            <c:if test="${not empty begin && begin != 1}">
+                                                                <li class="page_number_li">
+                                                                    <a href="${pagePath}${begin-1}">...</a>
+                                                                </li>
+                                                            </c:if>
+                                                            <c:forEach var="item" varStatus="k" begin="${begin}" end="${end}" step="1">
                                                                 <li class="${labelCurrentPage[value].equals(k.index)?'active':''}">
-                                                                    <a href="${path}${k.index}">${k.index}</a>
+                                                                    <a href="${pagePath}${k.index}">${k.index}</a>
                                                                 </li>
                                                             </c:forEach>
+                                                            <c:if test="${not empty end && end < labelPageCountMap[value]}">
+                                                                <li class="page_number_li">
+                                                                    <a href="${pagePath}${end+1}">...</a>
+                                                                </li>
+                                                            </c:if>
                                                             <li>
-                                                                <a href="${path}${pageNumber == labelPageCountMap[value] ? pageNumber : pageNumber + 1}">Next</a>
+                                                                <a href="${pagePath}${pageNumber == labelPageCountMap[value] ? pageNumber : pageNumber + 1}">Next</a>
                                                             </li>
                                                         </ul>
                                                     </div>

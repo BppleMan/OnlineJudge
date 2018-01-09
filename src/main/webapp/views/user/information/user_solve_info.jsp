@@ -64,21 +64,21 @@
                         </tbody>
                     </table>
                     <div class="pagination-control center-row">
-                        <c:set var="path">
+                        <c:set var="pagePath">
                             ${basePath}/user/information/user_solve_info?rt=${requestTime}&tp=${solved}&page=
                         </c:set>
                         <c:set var="pageNumber" value="${userSolveCurrentPageMap[solved]}"></c:set>
                         <ul class="pagination">
                             <li>
-                                <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}">Prev</a>
+                                <a href="${pagePath}${pageNumber == 1 ? pageNumber : pageNumber - 1}">Prev</a>
                             </li>
                             <c:forEach var="item" varStatus="i" begin="1" end="${userSolveTotalPageMap[solved]}" step="1">
                                 <li class="page_number_li ${i.index==userSolveCurrentPageMap[solved]?'active':''}">
-                                    <a href="${path}${i.index}">${i.index}</a>
+                                    <a href="${pagePath}${i.index}">${i.index}</a>
                                 </li>
                             </c:forEach>
                             <li>
-                                <a href="${path}${pageNumber == userSolveTotalPageMap[solved] ? userSolveTotalPageMap[solved] : pageNumber + 1}">Next</a>
+                                <a href="${pagePath}${pageNumber == userSolveTotalPageMap[solved] ? userSolveTotalPageMap[solved] : pageNumber + 1}">Next</a>
                             </li>
                         </ul>
                     </div>
@@ -124,15 +124,15 @@
                         <c:set var="pageNumber" value="${userSolveCurrentPageMap[solved]}"></c:set>
                         <ul class="pagination">
                             <li>
-                                <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}">Prev</a>
+                                <a href="${pagePath}${pageNumber == 1 ? pageNumber : pageNumber - 1}">Prev</a>
                             </li>
                             <c:forEach var="item" varStatus="i" begin="1" end="${userSolveTotalPageMap[solved]}" step="1">
                                 <li class="page_number_li ${i.index==userSolveCurrentPageMap[solved]?'active':''}">
-                                    <a href="${path}${i.index}">${i.index}</a>
+                                    <a href="${pagePath}${i.index}">${i.index}</a>
                                 </li>
                             </c:forEach>
                             <li>
-                                <a href="${path}${pageNumber == userSolveTotalPageMap[solved] ? userSolveTotalPageMap[solved] : pageNumber + 1}">Next</a>
+                                <a href="${pagePath}${pageNumber == userSolveTotalPageMap[solved] ? userSolveTotalPageMap[solved] : pageNumber + 1}">Next</a>
                             </li>
                         </ul>
                     </div>

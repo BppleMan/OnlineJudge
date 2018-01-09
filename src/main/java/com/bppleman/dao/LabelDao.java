@@ -2,6 +2,7 @@ package com.bppleman.dao;
 
 import com.bppleman.entity.Label;
 import com.bppleman.entity.Problem;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,5 +13,5 @@ import java.util.List;
 @Repository
 public interface LabelDao {
     List<Label> getLabels();
-    List<String> getLabelValues();
+    List<String> getValuesByType(@Param("type") String type);
 }

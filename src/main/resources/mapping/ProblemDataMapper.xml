@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bppleman.dao.ProblemDataDao">
+    <resultMap type="ProblemData" id="problemDataResultMap">
+        <id property="id" column="id"></id>
+        <result property="problemId" column="problem_id"></result>
+        <result property="inputData" column="input_data"></result>
+        <result property="outputData" column="output_data"></result>
+        <result property="shellName" column="shell_name"></result>
+        <result property="shellValue" column="shell_value"></result>
+    </resultMap>
+
+    <select id="getProblemDataByProblemId" resultMap="problemDataResultMap">
+        SELECT * FROM problem_data
+        WHERE problem_id = #{param1}
+    </select>
+    
+    <select id="getDataByProblemIDAndShellName" resultMap="problemDataResultMap">
+        SELECT p.id,p.problem_id, p.input_data,p.output_data,s.shell_name,s.shell_value
+        FROM problem_data p,shell s
+        WHERE p.problem_id = #{param1}
+        AND s.shell_name = #{param2}
+    </select>
+
+    <insert id="insertProblemData" parameterType="ProblemData">
+        INSERT INTO problem_data(problem_id, input_data, output_data)
+        VALUES (#{problemId}, #{inputData}, #{outputData})
+    </insert>
+
+    <update id="updateProblemData" parameterType="ProblemData">
+        UPDATE problem_data SET
+        input_data = #{inputData},
+        output_data = #{outputData}
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -5,7 +5,7 @@
   Time: 16:59
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -30,7 +30,7 @@
         <h1 class="text-center">Problems Set</h1>
         <hr>
         <div class="pagination-control">
-            <c:set var="path">
+            <c:set var="pagePath">
                 ${basePath}/contest/show_contest?page=
             </c:set>
             <c:set var="urlParam">
@@ -38,15 +38,15 @@
             </c:set>
             <ul class="pagination">
                 <li>
-                    <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}${urlParam}">Prev</a>
+                    <a href="${pagePath}${pageNumber == 1 ? pageNumber : pageNumber - 1}${urlParam}">Prev</a>
                 </li>
                 <c:forEach var="item" varStatus="i" begin="1" end="${pageCount}" step="1">
                     <li class="page_number_li${pageNumber.equals(i.index)?' active':''}">
-                        <a href="${path}${i.index}${urlParam}">${i.index}</a>
+                        <a href="${pagePath}${i.index}${urlParam}">${i.index}</a>
                     </li>
                 </c:forEach>
                 <li>
-                    <a href="${path}${pageNumber == pageCount ? pageCount : pageNumber + 1}${urlParam}">Next</a>
+                    <a href="${pagePath}${pageNumber == pageCount ? pageCount : pageNumber + 1}${urlParam}">Next</a>
                 </li>
             </ul>
         </div>
@@ -92,15 +92,15 @@
         <div class="pagination-control">
             <ul class="pagination">
                 <li>
-                    <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}${urlParam}">Prev</a>
+                    <a href="${pagePath}${pageNumber == 1 ? pageNumber : pageNumber - 1}${urlParam}">Prev</a>
                 </li>
                 <c:forEach var="item" varStatus="i" begin="1" end="${pageCount}" step="1">
                     <li class="page_number_li${pageNumber.equals(i.index)?' active':''}">
-                        <a href="${path}${i.index}${urlParam}">${i.index}</a>
+                        <a href="${pagePath}${i.index}${urlParam}">${i.index}</a>
                     </li>
                 </c:forEach>
                 <li>
-                    <a href="${path}${pageNumber == pageCount ? pageCount : pageNumber + 1}${urlParam}">Next</a>
+                    <a href="${pagePath}${pageNumber == pageCount ? pageCount : pageNumber + 1}${urlParam}">Next</a>
                 </li>
             </ul>
         </div>

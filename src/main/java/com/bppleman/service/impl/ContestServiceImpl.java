@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +40,30 @@ public class ContestServiceImpl implements ContestService {
         if (page == null || length == null)
             offset = 0;
         else offset = (page - 1) * length;
+        List<Contest> contests;
         if ((type == null || "".equals(type.trim()))&& (keyWord == null || "".equals(type.trim()))) {
-            return getContestsByParamWithPage(type, keyWord, offset, length);
+            contests = getContestsByParamWithPage(type, keyWord, offset, length);
         } else if (type.equals(ContestController.Type.NAME)) {
-            return getContestByNameWithPage(keyWord, offset, length);
+            contests = getContestByNameWithPage(keyWord, offset, length);
         } else  {
-            return getContestsByParamWithPage(type, keyWord, offset, length);
+            contests = getContestsByParamWithPage(type, keyWord, offset, length);
         }
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        for (Contest contest : contests) {
+            if (!contest.getStatus().equals(Contest.Status.RUNNING)) {
+                if (currentTime.getTime() >= contest.getStartTime().getTime()) {
+                    contest.setStatus(Contest.Status.RUNNING);
+                    updateContest(null, contest.getId());
+                }
+            }
+            if (!contest.getStatus().equals(Contest.Status.END)) {
+                if (currentTime.getTime() > contest.getEndTime().getTime()) {
+                    contest.setStatus(Contest.Status.END);
+                    updateContest(null, contest.getId());
+                }
+            }
+        }
+        return contests;
     }
 
     public List<Contest> getContestsByParamWithPage(String columnName, String param, Integer offset, Integer length) {
@@ -78,17 +96,63 @@ public class ContestServiceImpl implements ContestService {
     @Transactional
     public boolean insertContest(Contest contest) {
         boolean result = true;
+//            如果开始时间比当前时间推后60秒
+//            即在60秒内创建的contest
+//            都将直接视为running
+//            否则为ready
+        if ((contest.getStartTime().getTime() - System.currentTimeMillis()) <= 60000) {
+            contest.setStatus(Contest.Status.READY);
+        } else {
+            contest.setStatus(Contest.Status.RUNNING);
+        }
+        long duration = (contest.getDay() * 24 * 3600 + contest.getHour() * 3600 + contest.getMinute() * 60 + contest.getSecond()) * 1000;
+        contest.setEndTime(new Timestamp(contest.getStartTime().getTime() + duration));
         if (contestDao.insertContest(contest) != 1)
             result = false;
         return result;
     }
 
     @Override
-    public boolean updateContest(Contest contest) {
+    @Transactional
+    public boolean updateContest(Contest contest, Integer contestId) {
         boolean result = true;
-        if (contestDao.updateContest(contest) != 1)
+        Contest oldContest = getContestById(contestId);
+        if (contest != null) {
+            oldContest.updateFrom(contest);
+            if (!contest.getType().equals(oldContest.getType())) {
+                oldContest.setType(contest.getType());
+                if (contest.getType().equals(Contest.Type.PASSWORD)) {
+                    if (!contest.getPassword().trim().equals("******")) {
+                        oldContest.setPassword(contest.getPassword().trim());
+                    }
+                }
+            }
+        }
+        if (contestDao.updateContest(oldContest) != 1)
             result = false;
         return result;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteContest(Integer contestId) {
+        boolean result = true;
+        if (contestDao.deleteContest(contestId) != 1)
+            result = false;
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public Contest cloneContest(Contest contest, Admin admin) throws CloneNotSupportedException {
+        Contest clone = contest.clone();
+        clone.setUsername(admin.getAdminName());
+        clone.setUserId(admin.getId());
+        contestDao.insertContest(clone);
+        for (Integer id : clone.getProblemIds()) {
+            contestDao.insertProblemToContest(clone.getId(), id);
+        }
+        return clone;
     }
 
     @Override
@@ -135,7 +199,8 @@ public class ContestServiceImpl implements ContestService {
                     shouldInsertProblemIds.add(selectedProblemId);
                 }
             }
-        } else if (problemIds != null && problemIds.size() != 0) {
+        }
+        if (problemIds != null && problemIds.size() != 0) {
 //            如果原数组非空，选择的数组为空
 //            需要删除全部problemIds
             if (selectedProblemIds == null || selectedProblemIds.size() == 0) {
@@ -143,7 +208,8 @@ public class ContestServiceImpl implements ContestService {
                     shouldDeleteProblemIds.add(problemId);
                 }
             }
-        } else if (problemIds != null && problemIds.size() != 0) {
+        }
+        if (problemIds != null && problemIds.size() != 0) {
             if (selectedProblemIds != null && selectedProblemIds.size() != 0) {
 //                如果原数组非空，选择的数组非空
                 for (Integer problemId : problemIds) {

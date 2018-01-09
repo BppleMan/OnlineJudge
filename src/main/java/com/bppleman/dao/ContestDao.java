@@ -24,8 +24,10 @@ public interface ContestDao {
     Contest getContestById(Integer contestId);
     //    插入一个contest
     Integer insertContest(Contest contest);
-//    更新Contest
+    //    更新Contest
     Integer updateContest(Contest contest);
+    //    删除竞赛
+    Integer deleteContest(Integer contestId);
 
     /******************************************************
      * 针对contest中problem的CRUD

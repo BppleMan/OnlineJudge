@@ -34,6 +34,7 @@ public class MainController {
 
     @RequestMapping("home")
     public String backHome(HttpServletRequest request, HttpSession session) {
+        System.out.println("MainController.backHome");
         return prefix + home;
     }
 

@@ -111,7 +111,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     @Transactional
-    public boolean insertProblem(Problem problem) {
+    public boolean insertProblem(Problem problem, String[] labels) {
         boolean result = true;
 //        插入题目
         if (problemDao.insertProblem(problem) != 1) {
@@ -119,9 +119,15 @@ public class ProblemServiceImpl implements ProblemService {
         }
 //        插入题目标签
         if (result == true) {
-            for (ProblemLabel problemLabel : problem.getProblemLabels()) {
+            List<ProblemLabel> problemLabels = new ArrayList<>();
+            for (String label : labels) {
+                ProblemLabel problemLabel = new ProblemLabel();
+                problemLabel.setProblemId(problem.getId());
+                problemLabel.setLabel(label);
+                problemLabels.add(problemLabel);
                 result = problemLabelService.insertProblemLabel(problemLabel);
             }
+            problem.setProblemLabels(problemLabels);
         }
 //        插入题目通过率（初始化工作）
         if (result == true) {
@@ -137,50 +143,28 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     @Transactional
-    public boolean updateProblem(Problem problem) {
+    public boolean updateProblem(Problem newProblem, String[] labels) {
         boolean result = true;
+        Problem problem = getProblemByProblemId(newProblem.getId());
+        problem.setTitle(newProblem.getTitle());
+        problem.setDescription(newProblem.getDescription());
+        problem.setInput(newProblem.getInput());
+        problem.setOutput(newProblem.getOutput());
+        problem.setSampleInput(newProblem.getSampleInput());
+        problem.setSampleOutput(newProblem.getSampleOutput());
+        problem.setHints(newProblem.getHints());
+        problem.setAuthor(newProblem.getAuthor());
         if (problemDao.updateProblem(problem) != 1)
             result = false;
         if (result == true) {
-            List<ProblemLabel> oldProblemLabels = problemLabelService.getProblemLabelByProblemId(problem.getId());
-            List<ProblemLabel> newProblemLabels = problem.getProblemLabels();
-            for (ProblemLabel oldProblemLabel : oldProblemLabels) {
-                for (ProblemLabel newProblemLabel : newProblemLabels) {
-                    if (oldProblemLabel.getId().equals(newProblemLabel.getId())) {
-                        if (!oldProblemLabel.getLabel().equals(newProblemLabel.getLabel()))
-//                            如果新旧标签组中同时存在同一个标签（id相同）
-//                            但此时该ProblemLabel中的label不相同
-//                            那么应该更新该ProblemLabel（以新的为主）
-                            result = problemLabelService.updateProblemLabel(newProblemLabel);
-                        break;
-                    }
-                }
-            }
-            for (ProblemLabel newProblemLabel : newProblemLabels) {
-                boolean contains = false;
-                for (ProblemLabel oldProblemLabel : oldProblemLabels) {
-                    if (oldProblemLabel.getLabel().equals(newProblemLabel.getLabel())) {
-                        contains = true;
-                        break;
-                    }
-                }
-//                如果旧的标签不包含某个新标签
-//                说明该新标签需要被插入
-                if (contains == false)
-                    result = problemLabelService.insertProblemLabel(newProblemLabel);
-            }
-            for (ProblemLabel oldProblemLabel : oldProblemLabels) {
-                boolean contains = false;
-                for (ProblemLabel newProblemLabel : newProblemLabels) {
-                    if (newProblemLabel.getLabel().equals(oldProblemLabel.getLabel())) {
-                        contains = true;
-                        break;
-                    }
-                }
-//                如果新标签不包含某个旧标签
-//                说明该旧标签需要被删除
-                if (contains == false)
-                    result = problemLabelService.deleteProblemLabelByProblemLabelId(oldProblemLabel.getId());
+            result = problemLabelService.deleteProblemLabelByProblemId(problem.getId());
+            List<ProblemLabel> problemLabels = new ArrayList<>();
+            for (String label : labels) {
+                ProblemLabel problemLabel = new ProblemLabel();
+                problemLabel.setProblemId(problem.getId());
+                problemLabel.setLabel(label);
+                problemLabels.add(problemLabel);
+                result = problemLabelService.insertProblemLabel(problemLabel);
             }
         }
         if (result == true) {

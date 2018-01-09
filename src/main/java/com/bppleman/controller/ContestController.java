@@ -86,58 +86,17 @@ public class ContestController {
     public String create_contest(String note, HttpSession session) {
         String create_contest_token = TokenTool.getInstance().makeToken();
         session.setAttribute("create_contest_token", create_contest_token);
-        if (note.equals(Contest.Note.TEACHER)) {
-            User user = (User)session.getAttribute("user");
-//            当点击Teacher下的CreateContest的时候
-//            需要判断登录的账号是否是管理员
-//            管理员才能创建teacher级别的contest
-//            否则直接强制创建diy级别的contest
-            if (user.getType().equals(User.Admin)) {
-                session.setAttribute("note", note);
-            } else {
-                session.setAttribute("note", Contest.Note.DIY);
-            }
-        } else {
-//            如果点击的是DIY下的CreateContest
-//            则任何账户都可以直接创建
-            session.setAttribute("note", note);
-        }
         return prefix + create_contest;
     }
 
     @RequestMapping("/submit_contest")
-    public String submit_contest(Contest contest,
-                                 Integer day, Integer hour, Integer minute, Integer second,
-                                 String token, HttpSession session) {
+    public String submit_contest(Contest contest, String token, HttpSession session) {
         String create_contest_token = (String) session.getAttribute("create_contest_token");
         if (token.equals(create_contest_token)) {
-            long duration = (day * 24 * 3600 + hour * 3600 + minute * 60 + second) * 1000;
-            Timestamp endTime = new Timestamp(contest.getStartTime().getTime() + duration);
-            contest.setEndTime(endTime);
-            contest.setDuration(duration);
-//            如果开始时间比当前时间推后60秒
-//            即在60秒内创建的contest
-//            都将直接视为running
-//            否则为ready
-            if ((contest.getStartTime().getTime() - System.currentTimeMillis()) <= 60000) {
-                contest.setStatus(Contest.Status.READY);
-            } else {
-                contest.setStatus(Contest.Status.RUNNING);
-            }
+
             User user = (User)session.getAttribute("user");
             contest.setUserId(user.getId());
             contest.setUsername(user.getUsername());
-            String note = (String) session.getAttribute("note");
-//            这里就是正式设置Note的地方
-//            两个判断条件：
-//            1、账户必须是管理员
-//            2、点击的必须是Teacher下的CreateContest
-//            如果都满足那么将contest设置为Contest.Note.TEACHER
-            if (user.getType().equals(User.Admin) && note.equals(Contest.Note.TEACHER)) {
-                contest.setNote(Contest.Note.TEACHER);
-            } else {
-                contest.setNote(Contest.Note.DIY);
-            }
 
             if (contestService.insertContest(contest)) {
                 return "redirect:" + prefix + editContestProblem + "?contestId=" + contest.getId();
@@ -147,7 +106,7 @@ public class ContestController {
     }
 
     @RequestMapping("/edit_contest_problem")
-    public String edit_contest_problem(Integer contestId, String note,
+    public String edit_contest_problem(Integer contestId,
                                        @RequestParam(value = "rt", required = false) Integer requestTime,
                                        @RequestParam(value = "lt", required = false) String labelType,
                                        @RequestParam(value = "lv", required = false) String labelValue,
@@ -201,30 +160,46 @@ public class ContestController {
 //            2、每页problem数量
             Map<String, List<Problem>> labelProblemsMap = problemLabelService.getLabelProblemsMapByLabelValueWithPage(labelCurrentPage, countPerPage);
             Map<String, Integer> labelPageCountMap = problemLabelService.getLabelPageCountsMap(labelProblemsMap.keySet(), countPerPage);
+            Map<String, Map<String, Integer>> labelPageCountBeginEndMap = new HashMap<>();
+            for (String label : labelPageCountMap.keySet()) {
+                Map<String, Integer> beginEndMap = new HashMap<>();
+                Integer begin = 1, end = 1;
+                Integer pageCount = labelPageCountMap.get(label);
+                Integer pageNumber =  labelCurrentPage.get(label);
+                if (pageCount > 10) {
+                    for (int i = 0; i < Math.ceil((double) pageCount / 10); i++) {
+                        if (pageNumber > i * 10 && pageNumber <= (i + 1) * 10) {
+                            begin = i * 10 + 1;
+                            end = (i + 1) * 10;
+                        }
+                    }
+                    if (end > pageCount)
+                        end = pageCount;
+                }
+                beginEndMap.put("begin", begin);
+                beginEndMap.put("end", end);
+                labelPageCountBeginEndMap.put(label, beginEndMap);
+            }
+
+            request.setAttribute("labelPageCountBeginEndMap", labelPageCountBeginEndMap);
             request.setAttribute("labelProblemsMap", labelProblemsMap);
             request.setAttribute("labelPageCountMap", labelPageCountMap);
 //            contest：向前端传值
             request.setAttribute("contest", contest);
             request.setAttribute("lv", labelValue);
             request.setAttribute("labelType", labelType);
-            request.setAttribute("note", note);
 //            token令牌
             String token = TokenTool.getInstance().makeToken();
             session.setAttribute("contest_problem_token", token);
             return prefix + editContestProblem;
         }
-        redirectAttributes.addAttribute("note", note);
         return "redirect:" + prefix + listContest;
     }
 
     @RequestMapping("/submit_contest_problem")
     public String submit_contest_problem(@RequestParam(required = false) List<Integer> selected,
                                          Integer contestId, String token,
-                                         Integer page, String note,
-                                         @RequestParam(value = "tp", required = false) String type,
-                                         @RequestParam(value = "kw", required = false) String keyWord,
-                                         HttpSession session,
-                                         RedirectAttributes redirectAttributes){
+                                         HttpSession session){
         String contest_problem_token = (String)session.getAttribute("contest_problem_token");
         if (token.equals(contest_problem_token)) {
 //            经过编辑contest之后，将会产生三部分problem
@@ -233,31 +208,20 @@ public class ContestController {
 //            3、需要删除的problem
             contestService.updateContestProblem(contestId, selected);
         }
-        redirectAttributes.addAttribute("page", page);
-        redirectAttributes.addAttribute("tp", type);
-        redirectAttributes.addAttribute("kw", keyWord);
-        redirectAttributes.addAttribute("note", note);
         return "redirect:" + prefix + listContest;
     }
 
     @RequestMapping("/list_contest")
     public String listContestWithPageNumber(@RequestParam(value = "tp", required = false) String type,
                                             @RequestParam(value = "kw", required = false) String keyWord,
-                                            @RequestParam("page") Integer pageNumber,
+                                            @RequestParam(value = "page", required = false) Integer pageNumber,
+                                            @RequestParam(value = "cp", required = false) Integer countPerPage,
                                             HttpServletRequest request) {
-        Integer countPerPage = 20;
+        if (countPerPage == null)
+            countPerPage = 20;
+        if (pageNumber == null)
+            pageNumber = 1;
         List<Contest> contests = contestService.getContestsWithPage(type, keyWord, pageNumber, countPerPage);
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-        for (Contest contest : contests) {
-            if (currentTime.getTime() >= contest.getStartTime().getTime()) {
-                contest.setStatus(Contest.Status.RUNNING);
-                contestService.updateContest(contest);
-            }
-            if (currentTime.getTime() > contest.getEndTime().getTime()) {
-                contest.setStatus(Contest.Status.END);
-                contestService.updateContest(contest);
-            }
-        }
         request.setAttribute("contests", contests);
         setPagination(type, keyWord, countPerPage, pageNumber, request);
         request.setAttribute("h1", "竞赛列表");

@@ -95,20 +95,20 @@
         </div>
         <hr>
         <div class="pagination-control">
-            <c:set var="path">
+            <c:set var="pagePath">
                 ${basePath}/problem/list_problem?page=
             </c:set>
             <ul class="pagination">
                 <li>
-                    <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}${searchParam}">Prev</a>
+                    <a href="${pagePath}${pageNumber == 1 ? pageNumber : pageNumber - 1}${searchParam}">Prev</a>
                 </li>
                 <c:forEach var="item" varStatus="i" begin="1" end="${pageCount}" step="1">
                     <li class="page_number_li">
-                        <a href="${path}${i.index}${searchParam}">${i.index}</a>
+                        <a href="${pagePath}${i.index}${searchParam}">${i.index}</a>
                     </li>
                 </c:forEach>
                 <li>
-                    <a href="${path}${pageNumber == pageCount ? pageCount : pageNumber + 1}${searchParam}">Next</a>
+                    <a href="${pagePath}${pageNumber == pageCount ? pageCount : pageNumber + 1}${searchParam}">Next</a>
                 </li>
             </ul>
         </div>
@@ -160,15 +160,15 @@
         <div class="pagination-control">
             <ul class="pagination">
                 <li>
-                    <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}${searchParam}">Prev</a>
+                    <a href="${pagePath}${pageNumber == 1 ? pageNumber : pageNumber - 1}${searchParam}">Prev</a>
                 </li>
                 <c:forEach var="item" varStatus="i" begin="1" end="${pageCount}" step="1">
                     <li class="page_number_li">
-                        <a href="${path}${i.index}${searchParam}">${i.index}</a>
+                        <a href="${pagePath}${i.index}${searchParam}">${i.index}</a>
                     </li>
                 </c:forEach>
                 <li>
-                    <a href="${path}${pageNumber == pageCount ? pageCount : pageNumber + 1}${searchParam}">Next</a>
+                    <a href="${pagePath}${pageNumber == pageCount ? pageCount : pageNumber + 1}${searchParam}">Next</a>
                 </li>
             </ul>
         </div>

@@ -1,5 +1,6 @@
 package com.bppleman.controller;
 
+import com.bppleman.entity.Admin;
 import com.bppleman.entity.Problem;
 import com.bppleman.entity.SmartProblem;
 import com.bppleman.entity.User;
@@ -43,6 +44,20 @@ public class SmartProblemController {
         Map<String, List<Problem>> generatedSmartProblemsMap = new HashMap<>();
         for (String key : smartProblemsMap.keySet()) {
             List<Problem> generatedSmartProblems = smartProblemService.getProblemsBySmartProblem(smartProblemsMap.get(key), user.getId());
+            generatedSmartProblemsMap.put(key,generatedSmartProblems);
+        }
+        System.out.println(generatedSmartProblemsMap);
+        return generatedSmartProblemsMap;
+    }
+
+    @RequestMapping("/generateProblemByAdmin")
+    @ResponseBody
+    public Map<String, List<Problem>> generateProblemByAdmin(@RequestBody Map<String ,SmartProblem> smartProblemsMap,
+                                                      HttpSession session) {
+        Admin admin = (Admin) session.getAttribute("admin");
+        Map<String, List<Problem>> generatedSmartProblemsMap = new HashMap<>();
+        for (String key : smartProblemsMap.keySet()) {
+            List<Problem> generatedSmartProblems = smartProblemService.getProblemsBySmartProblem(smartProblemsMap.get(key), admin.getId());
             generatedSmartProblemsMap.put(key,generatedSmartProblems);
         }
         System.out.println(generatedSmartProblemsMap);

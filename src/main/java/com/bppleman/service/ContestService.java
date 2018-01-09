@@ -1,5 +1,6 @@
 package com.bppleman.service;
 
+import com.bppleman.entity.Admin;
 import com.bppleman.entity.Contest;
 import com.bppleman.entity.Problem;
 import com.bppleman.entity.User;
@@ -24,7 +25,9 @@ public interface ContestService {
      */
     Integer getCount(String type, String keyWord);
     boolean insertContest(Contest contest);
-    boolean updateContest(Contest contest);
+    boolean updateContest(Contest contest, Integer contestId);
+    boolean deleteContest(Integer contestId);
+    Contest cloneContest(Contest contest, Admin admin) throws CloneNotSupportedException;
 
     boolean canCreateContest(User user);
     List<Integer> getProblemIdsByContestId(Integer contestId);

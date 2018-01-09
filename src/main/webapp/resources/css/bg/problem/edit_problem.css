@@ -1,0 +1,25 @@
+.container .background .create-problem .input-group {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+}
+
+.container .background .create-problem .title {
+    text-align: center;
+}
+
+.container .background .create-problem .title .input-group {
+    width: 40%;
+}
+
+.container .background .create-problem h4{
+    color: #eee;
+}
+
+.container .background .create-problem .center-row {
+    text-align: center;
+}
+
+.container .background .create-problem .center-row button {
+    margin: 0% auto;
+}

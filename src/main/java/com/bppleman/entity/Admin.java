@@ -1,9 +1,18 @@
 package com.bppleman.entity;
 
 public class Admin {
+    private Integer id;
     private String adminName;
     private String password;
     private String teacherCard;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getAdminName() {
         return adminName;
@@ -29,6 +38,13 @@ public class Admin {
         this.teacherCard = teacherCard;
     }
 
+    public void cloneFrom(Admin admin) {
+        this.id = admin.id;
+        this.adminName = admin.adminName;
+        this.password = admin.password;
+        this.teacherCard = admin.teacherCard;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -36,6 +52,7 @@ public class Admin {
 
         Admin admin = (Admin) o;
 
+        if (id != null ? !id.equals(admin.id) : admin.id != null) return false;
         if (adminName != null ? !adminName.equals(admin.adminName) : admin.adminName != null) return false;
         if (password != null ? !password.equals(admin.password) : admin.password != null) return false;
         return teacherCard != null ? teacherCard.equals(admin.teacherCard) : admin.teacherCard == null;
@@ -43,7 +60,8 @@ public class Admin {
 
     @Override
     public int hashCode() {
-        int result = adminName != null ? adminName.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (adminName != null ? adminName.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (teacherCard != null ? teacherCard.hashCode() : 0);
         return result;
@@ -52,7 +70,8 @@ public class Admin {
     @Override
     public String toString() {
         return "Admin{" +
-                "adminName='" + adminName + '\'' +
+                "id=" + id +
+                ", adminName='" + adminName + '\'' +
                 ", password='" + password + '\'' +
                 ", teacherCard='" + teacherCard + '\'' +
                 '}';

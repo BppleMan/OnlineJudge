@@ -1,0 +1,26 @@
+
+.content .problemList {
+    width: 200px;
+    background-color: #fff;
+    border-radius: 4px;
+    height: 100%;
+    float: left;
+    overflow: auto;
+}
+
+.content .problemList-right {
+    margin-left: 200px;
+}
+
+.content .problemList-right .tab {
+    display: inline-block;
+    width: 100%;
+}
+
+.content .problemList-right .tab .nav-tabs {
+    border-bottom: 0;
+}
+
+.content .problemList-right .tab .panel .panel-heading a {
+    display: block;
+}

@@ -1,7 +1,7 @@
 package com.bppleman.judge;
 
 import com.bppleman.entity.Status;
-import com.bppleman.service.DataService;
+import com.bppleman.service.ProblemDataService;
 import com.bppleman.service.StatusService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +21,7 @@ public class JudgeThreadProxyTest {
     private StatusService statusService;
 
     @Resource
-    private DataService dataService;
+    private ProblemDataService problemDataService;
 
     @Resource
     private JudgeThreadProxy judgeThreadProxy;

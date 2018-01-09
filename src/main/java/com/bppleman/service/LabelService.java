@@ -13,5 +13,5 @@ import java.util.Map;
 @Repository
 public interface LabelService {
     List<Label> getLabels();
-    List<String> getLabelValues();
+    List<String> getValuesByType(String type);
 }

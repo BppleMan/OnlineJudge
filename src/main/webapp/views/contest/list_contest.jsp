@@ -5,7 +5,7 @@
   Time: 17:01
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <%
@@ -35,7 +35,7 @@
                 --%>
                 <div class="input-group">
                     <input name="keyWord" type="text" class="form-control" value="${keyWord}">
-                    <span class="input-group-btn"><button class="btn btn-default" type="button" onclick="searchContest('${note}')">搜索</button></span>
+                    <span class="input-group-btn"><button class="btn btn-default" type="button" onclick="searchContest()">搜索</button></span>
                 </div>
             </div>
             <%--search是后台传值，表示当前是否是搜索后得到的页面--%>
@@ -54,7 +54,7 @@
         </div>
         <hr>
         <div class="pagination-control">
-            <c:set var="path">
+            <c:set var="pagePath">
                 ${basePath}/contest/list_contest?page=
             </c:set>
             <c:set var="searchParam">
@@ -62,15 +62,15 @@
             </c:set>
             <ul class="pagination">
                 <li id="page_number_head_pre">
-                    <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}${searchParam}">Prev</a>
+                    <a href="${pagePath}${pageNumber == 1 ? pageNumber : pageNumber - 1}${searchParam}">Prev</a>
                 </li>
                 <c:forEach var="item" varStatus="i" begin="1" end="${pageCount}" step="1">
                     <li class="page_number_li">
-                        <a href="${path}${i.index}${searchParam}">${i.index}</a>
+                        <a href="${pagePath}${i.index}${searchParam}">${i.index}</a>
                     </li>
                 </c:forEach>
                 <li id="page_number_head_next">
-                    <a href="${path}${pageNumber == pageCount ? pageCount : pageNumber + 1}${searchParam}">Next</a>
+                    <a href="${pagePath}${pageNumber == pageCount ? pageCount : pageNumber + 1}${searchParam}">Next</a>
                 </li>
             </ul>
         </div>
@@ -100,14 +100,13 @@
                     </td>
                     <td class="text-center">${contest.startTime}</td>
                     <td class="text-center">${contest.endTime}</td>
-                    <td class="text-center">${contest.formatDuration()}</td>
+                    <td class="text-center">${contest.day}天${contest.hour}时${contest.minute}分${contest.second}秒</td>
                     <td class="text-center">${contest.status}</td>
                     <td class="text-center">${contest.type}</td>
                     <td class="text-center">
                         <c:choose>
                             <c:when test="${contest.username == user.username}">
                                 <a href="${basePath}/contest/edit_contest_problem?contestId=${contest.id}&cpage=1">编辑</a>
-                                <a href="">删除</a>
                             </c:when>
                             <c:otherwise>
                                 ${contest.username}
@@ -121,15 +120,15 @@
         <div class="pagination-control">
             <ul class="pagination">
                 <li id="page_number_foot_pre">
-                    <a href="${path}${pageNumber == 1 ? pageNumber : pageNumber - 1}${searchParam}">Prev</a>
+                    <a href="${pagePath}${pageNumber == 1 ? pageNumber : pageNumber - 1}${searchParam}">Prev</a>
                 </li>
                 <c:forEach var="item" varStatus="i" begin="1" end="${pageCount}" step="1">
                     <li class="page_number_li">
-                        <a href="${path}${i.index}${searchParam}">${i.index}</a>
+                        <a href="${pagePath}${i.index}${searchParam}">${i.index}</a>
                     </li>
                 </c:forEach>
                 <li id="page_number_foot_next">
-                    <a href="${path}${pageNumber == pageCount ? pageCount : pageNumber + 1}${searchParam}">Next</a>
+                    <a href="${pagePath}${pageNumber == pageCount ? pageCount : pageNumber + 1}${searchParam}">Next</a>
                 </li>
             </ul>
         </div>

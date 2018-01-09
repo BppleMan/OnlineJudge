@@ -1,7 +1,7 @@
 package com.bppleman.judge;
 
 import com.bppleman.entity.Status;
-import com.bppleman.service.DataService;
+import com.bppleman.service.ProblemDataService;
 import com.bppleman.service.StatusService;
 import com.bppleman.service.UserService;
 import org.apache.log4j.Level;
@@ -18,7 +18,7 @@ import java.io.File;
 public class JudgeThreadProxy {
 
     @Resource
-    private DataService dataService = null;
+    private ProblemDataService problemDataService = null;
 
     @Resource
     private UserService userService = null;
@@ -40,7 +40,7 @@ public class JudgeThreadProxy {
             @Override
             public void run() {
 //                创建评测所需要的目录结构，包括目录和文件
-                JudgeFile judgeFile = new JudgeFile(status, dataService);
+                JudgeFile judgeFile = new JudgeFile(status, problemDataService);
 //                创建目录
                 if (judgeFile.makeDirector())
                     logger.info("->创建目录结构成功");

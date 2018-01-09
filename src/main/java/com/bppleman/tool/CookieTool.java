@@ -29,8 +29,14 @@ public class CookieTool {
         }
     }
 
-    public static void removeCookie(HttpServletRequest request, HttpServletResponse response) {
-        Cookie cookie = new Cookie("username", null);
+    public static void addCookid(String cookieName, String cookieValue, HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = new Cookie(cookieName, cookieValue);
+        cookie.setPath(request.getContextPath());
+        response.addCookie(cookie);
+    }
+
+    public static void removeCookie(String cookieName, HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = new Cookie(cookieName, null);
         cookie.setPath(request.getContextPath());
         response.addCookie(cookie);
     }

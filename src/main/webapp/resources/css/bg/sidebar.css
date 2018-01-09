@@ -1,0 +1,68 @@
+body {
+    height: 100%;
+}
+.container {
+    padding: 0;
+    height: 100%;
+}
+
+.container .jumbotron {
+    height: 150px;
+    margin: 0;
+    vertical-align: middle;
+}
+
+.container .jumbotron h1 {
+    margin: 0;
+    line-height: 100%;
+}
+
+.container .background {
+    border-radius: 4px;
+    width: 100%;
+    position: absolute;
+    top: 150px;
+    bottom: 0px;
+    left: 0px;
+}
+.container .background .sidebar {
+    width: 300px;
+    background-color: #eee;
+    border-radius: inherit;
+    height: 100%;
+    display: inline-block;
+    float: left;
+}
+
+.container .background .sidebar h4 {
+    font-size: 100%;
+}
+
+.container .background .sidebar h4 a {
+    display: block;
+    width: 100%;
+}
+
+.container .background .sidebar h4 a:hover {
+    color: #1abc9c;
+}
+
+.container .background .sidebar .panel-body ul.list-group li.active a {
+    color: #fff;
+}
+
+.container .background .sidebar .panel-body ul.list-group li a {
+    display: block;
+    color: #337ab7;
+}
+
+.container .background .sidebar .panel-body ul.list-group li a:hover {
+    color: #16a085;
+}
+
+.container .background .content {
+    height: 100%;
+    border-radius: inherit;
+    background-color: #34495e;
+    overflow-y: auto;
+}

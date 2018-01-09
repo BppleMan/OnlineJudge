@@ -1,8 +1,11 @@
 package com.bppleman.entity;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,13 +19,15 @@ public class Contest implements Serializable{
     private Date startTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
-    private Long duration;
     private String status;
     private String type;
     private String username;
     private Integer userId;
     private String password;
-    private String note;
+    private Long day;
+    private Long hour;
+    private Long minute;
+    private Long second;
     private List<Integer> problemIds;
 
     public static class Type {
@@ -35,11 +40,6 @@ public class Contest implements Serializable{
         public static String RUNNING = "running";
         public static String READY = "ready";
         public static String END = "end";
-    }
-
-    public static class Note {
-        public static String TEACHER = "teacher";
-        public static String DIY = "diy";
     }
 
     public Integer getId() {
@@ -72,14 +72,6 @@ public class Contest implements Serializable{
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
-    }
-
-    public Long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Long duration) {
-        this.duration = duration;
     }
 
     public String getStatus() {
@@ -122,14 +114,6 @@ public class Contest implements Serializable{
         this.password = password;
     }
 
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
     public List<Integer> getProblemIds() {
         return problemIds;
     }
@@ -137,36 +121,104 @@ public class Contest implements Serializable{
     public void setProblemIds(List<Integer> problemIds) {
         this.problemIds = problemIds;
     }
-    
-    public String formatDuration() {
-        Integer ss = 1000;
-        Integer mi = ss * 60;
-        Integer hh = mi * 60;
-        Integer dd = hh * 24;
 
-        Long day = duration / dd;
-        Long hour = (duration - day * dd) / hh;
-        Long minute = (duration - day * dd - hour * hh) / mi;
-        Long second = (duration - day * dd - hour * hh - minute * mi) / ss;
-        Long milliSecond = duration - day * dd - hour * hh - minute * mi - second * ss;
+    public Long getDay() {
+        return day;
+    }
 
-        StringBuffer sb = new StringBuffer();
-        if(day > 0) {
-            sb.append(day+"天");
+    public void setDay(Long day) {
+        this.day = day;
+    }
+
+    public Long getHour() {
+        return hour;
+    }
+
+    public void setHour(Long hour) {
+        this.hour = hour;
+    }
+
+    public Long getMinute() {
+        return minute;
+    }
+
+    public void setMinute(Long minute) {
+        this.minute = minute;
+    }
+
+    public Long getSecond() {
+        return second;
+    }
+
+    public void setSecond(Long second) {
+        this.second = second;
+    }
+
+    public void updateFrom(Contest contest) {
+        this.name = contest.name;
+        this.endTime = contest.endTime;
+        this.day = contest.day;
+        this.hour = contest.hour;
+        this.minute = contest.minute;
+        this.second = contest.second;
+        if (startTime != null) {
+            this.startTime = contest.startTime;
+            long duration = (day * 24 * 3600 + hour * 3600 + minute * 60 + second) * 1000;
+            this.endTime = new Timestamp(startTime.getTime() + duration);
         }
-        if(hour > 0) {
-            sb.append(hour+"小时");
-        }
-        if(minute > 0) {
-            sb.append(minute+"分");
-        }
-        if(second > 0) {
-            sb.append(second+"秒");
-        }
-        if(milliSecond > 0) {
-            sb.append(milliSecond+"毫秒");
-        }
-        return sb.toString();
+    }
+
+    @Override
+    public Contest clone() throws CloneNotSupportedException {
+        Contest contest = new Contest();
+        contest.problemIds = new ArrayList<>(this.problemIds);
+        contest.name = new String(name);
+        contest.status = new String(status);
+        contest.type = new String(type);
+        contest.password = password;
+        return contest;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Contest contest = (Contest) o;
+
+        if (id != null ? !id.equals(contest.id) : contest.id != null) return false;
+        if (name != null ? !name.equals(contest.name) : contest.name != null) return false;
+        if (startTime != null ? !startTime.equals(contest.startTime) : contest.startTime != null) return false;
+        if (endTime != null ? !endTime.equals(contest.endTime) : contest.endTime != null) return false;
+        if (status != null ? !status.equals(contest.status) : contest.status != null) return false;
+        if (type != null ? !type.equals(contest.type) : contest.type != null) return false;
+        if (username != null ? !username.equals(contest.username) : contest.username != null) return false;
+        if (userId != null ? !userId.equals(contest.userId) : contest.userId != null) return false;
+        if (password != null ? !password.equals(contest.password) : contest.password != null) return false;
+        if (day != null ? !day.equals(contest.day) : contest.day != null) return false;
+        if (hour != null ? !hour.equals(contest.hour) : contest.hour != null) return false;
+        if (minute != null ? !minute.equals(contest.minute) : contest.minute != null) return false;
+        if (second != null ? !second.equals(contest.second) : contest.second != null) return false;
+        return problemIds != null ? problemIds.equals(contest.problemIds) : contest.problemIds == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
+        result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (userId != null ? userId.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (day != null ? day.hashCode() : 0);
+        result = 31 * result + (hour != null ? hour.hashCode() : 0);
+        result = 31 * result + (minute != null ? minute.hashCode() : 0);
+        result = 31 * result + (second != null ? second.hashCode() : 0);
+        result = 31 * result + (problemIds != null ? problemIds.hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -176,13 +228,15 @@ public class Contest implements Serializable{
                 ", name='" + name + '\'' +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
-                ", duration=" + duration +
                 ", status='" + status + '\'' +
                 ", type='" + type + '\'' +
                 ", username='" + username + '\'' +
                 ", userId=" + userId +
                 ", password='" + password + '\'' +
-                ", note='" + note + '\'' +
+                ", day=" + day +
+                ", hour=" + hour +
+                ", minute=" + minute +
+                ", second=" + second +
                 ", problemIds=" + problemIds +
                 '}';
     }

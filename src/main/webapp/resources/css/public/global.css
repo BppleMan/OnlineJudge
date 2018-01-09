@@ -1,6 +1,5 @@
 @import "../../lib/bootstrap/dist/css/bootstrap.min.css";
 @import "../../lib/flat-ui/dist/css/flat-ui.min.css";
-@import "../../lib/sidebar/css/style.css";
 @import "login_modal.css";
 
 body {

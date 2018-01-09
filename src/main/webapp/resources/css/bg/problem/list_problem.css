@@ -1,0 +1,42 @@
+.container .background .content .hover-top {
+    position: absolute;
+    left: 300px;
+    right: 0;
+    top: 0;
+}
+
+.container .background .content table {
+    margin-top: 43px;
+}
+
+.container .background .content .hover-top .pagination-control {
+    display: inline-block;
+    margin: 0;
+}
+
+.container .background .content .hover-top .pagination-control ul.pagination{
+    margin: inherit;
+}
+
+.container .background .content .hover-top .pagination-right {
+    display: inline-block;
+    float: right;
+    margin-left: 20px;
+}
+
+.container .background .content .hover-top .pagination-right .search-group {
+    vertical-align: top;
+}
+
+.container .background .content .hover-top .search-group .search-item {
+    display: inline-block;
+}
+
+#should-change {
+    display: inline-block;
+}
+
+.select2-container.text-center.form-control.select.select-primary.select-block.mbl {
+    display: block;
+    margin-bottom: 0;
+}
